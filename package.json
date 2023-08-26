@@ -1,0 +1,20 @@
+{
+  "name": "why-would-anyone-need-javascript-generators",
+  "version": "1.0.0",
+  "description": "Why would anyone need JavaScript generator functions?",
+  "main": "index.js",
+  "author": "James Sinclair <jrsinclair@gmail.com>",
+  "license": "Copyright",
+  "private": true,
+  "devDependencies": {
+    "eslint": "^8.48.0",
+    "parcel": "^2.9.3",
+    "prettier": "^3.0.2",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@types/reveal.js": "^4.4.2",
+    "highlight.js": "^11.8.0",
+    "reveal.js": "^4.5.0"
+  }
+}
