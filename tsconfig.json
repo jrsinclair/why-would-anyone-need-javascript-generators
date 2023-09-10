@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
+    "esModuleInterop": true,
     "experimentalDecorators": true,
     "jsxImportSource": "preact",
-    "esModuleInterop": true
-  }
+    "strictNullChecks": true
+  },
+  "include": ["./jest-setup.ts"]
 }

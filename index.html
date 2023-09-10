@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 
 <head>
     <link rel="stylesheet" href="node_modules/reveal.js/dist/reveal.css" />
@@ -11,7 +11,8 @@
     <div class="reveal">
         <div class="slides">
             <section data-markdown>
-                <textarea data-template>
+                <label for="talk">The talk:</label>
+                <textarea id="talk" data-template>
 # Why would anyone need JavaScript generator functions?
 
 ---
@@ -42,25 +43,88 @@
 
 ---
 
-```javascript [|1|11-13]
+```javascript [|1|3-8|11-13|16]
 function* myGeneratorFunction() {
-    // We create some data here
-    const listItem01 = document.createElement('li');
-    listItem01.innerHTML = 'Efficient code';
-    const listItem02 = document.createElement('li');
-    listItem02.innerHTML = 'Impossible code';
-    const listItem03 = document.createElement('li');
-    listItem03.innerHTML = 'Safer code';
+    // We create some data
+    const claim01 = 'Efficient code';
+    console.log('Created some data. Yielding', claim01);
+    yield claim01;
 
-    // Now we parcel out the data piece-by-piece
-    yield listItem01;
-    yield listItem02;
-    yield listItem03;
+    // And another bit of data
+    const claim02 = 'Impossible code';
+    console.log('Created some data. Yielding', claim02);
+    yield claim02;
+
+    // The line below might not do what you think it does.
+    return 42;
 }
 ```
 
 ---
 
+## What happens if we run this function?
+
+---
+
+```javascript
+let generator = myGeneratorFunction();
+```
+
+---
+
+## It doesn't do anything
+
+---
+
+## A generator object
+
+---
+
+```javascript
+function runGenerator(generator) {
+    let result;
+    do {
+        result = generator.next();
+        console.log(result);
+    } while (!result.done);
+}
+```
+
+---
+
+## So what?
+
+---
+
+## Like arrays, but more awkward
+
+---
+
+## Efficient code
+
+---
+
+## The Tim Tam Slam
+
+---
+
+1. Select a single biscuit.
+2. Bite a small chunk from one corner, 2&ndash;5&thinsp;mm from the apex.
+3. Repeat the bite on the diagonally opposite corner.
+4. Insert one of the bitten corners into a hot beverage. (Milo is traditional, but coffee, tea, or hot chocolate is also acceptable).
+5. Place your lips over the opposite corner, and draw liquid through the biscuit as if it were a straw.
+6. As soon as liquid enters your mouth, immediately consume the entire biscuit. It’s important to do this quickly before it loses its structural integrity.
+7. Repeat until there are no more Tim Tams, or you feel physically ill.
+
+---
+
+```javascript
+const bittenBiscuit = biteArbitraryCorner(biscuit);
+const doubleBitten = biteOppositeCorner(bittenBiscuit);
+const biscuitInBeverage = insertIntoBeverage(doubleBitten);
+const unstableBiscuit = drawLiquid(biscuitInBeverage);
+insertIntoMouth(unstableBiscuit);
+```
 
                 </textarea>
             </section>

@@ -9,4 +9,7 @@ let deck = new Reveal({
 deck.initialize({
   width: 1792,
   height: 1120,
+  markdown: {
+    smartypants: true,
+  },
 });
