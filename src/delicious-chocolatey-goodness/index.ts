@@ -1,10 +1,10 @@
-const defaultAnimationList: Animation[] = [];
+const defaultAnimationList: BiscuitAnimation[] = [];
 
 class Biscuit {
   readonly id: string;
-  readonly animationList: Animation[];
+  readonly animationList: BiscuitAnimation[];
 
-  constructor(id: string, animationList?: Animation[]) {
+  constructor(id: string, animationList?: BiscuitAnimation[]) {
     this.animationList = animationList ?? defaultAnimationList;
     this.id = id;
   }
@@ -32,7 +32,7 @@ export type TimTam =
   | FlavourExplosion
   | Consumed;
 
-type AnimationAction =
+export type AnimationAction =
   | 'new-biscuit'
   | 'bite-arbitrary-corner'
   | 'bite-opposite-corner'
@@ -40,7 +40,7 @@ type AnimationAction =
   | 'draw-liquid'
   | 'consume';
 
-type Animation = Readonly<{
+export type BiscuitAnimation = Readonly<{
   id: string;
   action: AnimationAction;
 }>;
@@ -61,14 +61,15 @@ export function insertIntoMug({ id, animationList }: TwiceBittenBiscuit): StrawP
 }
 
 function createWrapper() {
-  const wrapper = document.createElement('div');
+  const wrapper = document.createElement('ul');
   wrapper.classList.add('biscuits');
   document.body.appendChild(wrapper);
   return wrapper;
 }
 
-function createBiscuit(id) {
-  const biscuit = document.createElement('div');
+function createBiscuit(id: string) {
+  const biscuit = document.createElement('li');
+  biscuit.innerHTML = 'Tim Tam';
   biscuit.classList.add('biscuit');
   biscuit.id = id;
   biscuit.setAttribute('data-testid', id);
@@ -77,14 +78,58 @@ function createBiscuit(id) {
 }
 
 function newBiscuit(id: string) {
-  const wrapper = document.querySelector('.biscuits') ?? createWrapper();
-  wrapper.appendChild(createBiscuit(id));
+  const wrapper: HTMLElement = document.querySelector('.biscuits') ?? createWrapper();
+  const bikky = createBiscuit(id);
+  wrapper.appendChild(bikky);
+  return bikky;
 }
 
-export function animate(actions: ReadonlyArray<Animation>) {
-  actions.forEach(({ id, action }) => {
-    if (action === 'new-biscuit') {
-      newBiscuit(id);
-    }
+function animateBiteArbitraryCorner(id: string) {
+  const biscuit: HTMLElement = ($(`#${id}`) as HTMLElement | null) ?? newBiscuit(id);
+  if (!biscuit) newBiscuit(id);
+  biscuit.classList.add('once-bitten');
+  biscuit.innerHTML = 'Bitten biscuit';
+  return biscuit;
+}
+
+function createMug() {
+  const mug = document.createElement('ul');
+  mug.innerHTML = 'Mug';
+  mug.classList.add('mug');
+  document.body.appendChild(mug);
+  return mug;
+}
+
+interface AnimationOptions {
+  cadence: number;
+}
+
+function delay<A>(period: number, value: A): Promise<A> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(value), period);
   });
+}
+
+const $: typeof document.querySelector = document.querySelector.bind(document);
+
+export async function animate(
+  actions: ReadonlyArray<BiscuitAnimation>,
+  { cadence }: AnimationOptions = { cadence: 1000 },
+) {
+  return actions.reduce(
+    (promise, { id, action }) =>
+      promise.then(() => {
+        if (action === 'new-biscuit') {
+          newBiscuit(id);
+        }
+        if (action === 'bite-arbitrary-corner') {
+          animateBiteArbitraryCorner(id);
+        }
+        if (action === 'insert-into-mug') {
+          $('.mug') || createMug();
+        }
+        return delay(cadence, undefined);
+      }),
+    Promise.resolve(),
+  );
 }

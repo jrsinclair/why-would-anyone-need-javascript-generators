@@ -5,5 +5,15 @@
     "jsxImportSource": "preact",
     "strictNullChecks": true
   },
-  "include": ["./jest-setup.ts"]
+  "include": ["jest-setup.js", "./src"],
+  "jest": {
+    "compilerOptions": {
+      "esModuleInterop": true,
+      "experimentalDecorators": true,
+      "jsxImportSource": "preact",
+      "strictNullChecks": true
+    },
+    "include": ["jest.config.js", "./src"],
+    "preset": "ts-jest"
+  }
 }
