@@ -1,0 +1,154 @@
+:root {
+  --ink: #04040c;
+  --slate: #092d34;
+  --midnight: #0b2752;
+  --postbill: #f3e7cc;
+  --sheepskin: #e8e0cf;
+  --emigre-light: #faf0e6;
+  --emigre-text: #231f20;
+
+  --background-color: var(--slate);
+  --text-bg-color: var(--midnight);
+  --text-color: var(--emigre-light);
+  --code-bg: var(--slate);
+}
+
+/* Typography
+ * ------------------------------------------------------------------------------ */
+
+body {
+  color: var(--text-color);
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+/* Background
+ * ------------------------------------------------------------------------------ */
+
+.slam-bg {
+  background: var(--background-color);
+  margin: 0;
+  padding: 0;
+}
+
+.fog_layer,
+.fog {
+  top: 0;
+  left: 0;
+}
+
+.fog-bg {
+  background: var(--midnight);
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  z-index: -1;
+}
+
+.fog_layer {
+  background: url(../assets/tiling-clouds01.png) center center/100vw auto repeat transparent;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  opacity: 0.25;
+  position: absolute;
+}
+
+/* Biscuits
+ * ------------------------------------------------------------------------------ */
+
+.biscuits,
+.mug,
+.mug-after,
+.top-of-head {
+  max-width: 64em;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.biscuits {
+  display: flex;
+  flex-direction: row;
+}
+
+.biscuit {
+  list-style: none;
+  width: 6.25em;
+  height: 11.81622966em;
+  background: url(../assets/tim-tam-unbitten.svg) center center no-repeat transparent;
+  background-size: contain;
+  color: transparent;
+  transition:
+    clip-path ease-in 1s,
+    translate ease-in-out 1s,
+    rotate ease-in-out 1s,
+    margin-right ease-in 1s;
+  clip-path: polygon(0 0, 100% 0, 100% 0, 100% 0, 100% 100%, 0 100%, 0 100%, 0 100%);
+  margin-right: 2em;
+}
+
+.once-bitten {
+  clip-path: polygon(0 0, 80% 0, 90% 10%, 100% 15%, 100% 100%, 0 100%, 0 100%, 0 100%);
+}
+
+.twice-bitten,
+.in-mug {
+  clip-path: polygon(0 0, 80% 0, 90% 10%, 100% 15%, 100% 100%, 25% 100%, 20% 87%, 0 80%);
+}
+
+.in-mug {
+  translate: 350% 145%;
+  rotate: -30deg;
+  margin-right: -4em;
+}
+
+.mug {
+  background-size: contain;
+  background: url(../assets/mug.svg) center center no-repeat transparent;
+  height: 12.44201183em;
+  margin-top: 11.81622966em;
+  width: 32.25em;
+  position: relative;
+  z-index: -1;
+  color: transparent;
+}
+
+.mug-after {
+  background-size: contain;
+  background: url(../assets/mug-front.svg) center center no-repeat transparent;
+  height: 12.44201183em;
+  width: 32.25em;
+  display: block;
+  top: -12.44201183em;
+  left: 0;
+  z-index: 1;
+  content: ' ';
+  position: relative;
+}
+
+.top-of-head {
+  color: transparent;
+  position: relative;
+}
+
+.top-of-head::after {
+  color: #fff;
+  content: '😙';
+  position: absolute;
+  display: block;
+  font-size: 16em;
+  width: 1em;
+  height: 1em;
+  top: -2.890625em;
+  left: 0.7421875em;
+  z-index: -1;
+}
+
+/* Utilities
+ * ------------------------------------------------------------------------------ */
+
+.hidden {
+  visibility: hidden;
+}

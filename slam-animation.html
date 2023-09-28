@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tim Tam Slam Animation</title>
+    <link rel="stylesheet" href="./src/delicious-chocolatey-goodness/index.css" />
+</head>
+
+<body class="slam-bg">
+    <div class="fog-bg">
+        <div class="fog_layer"></div>
+    </div>
+
+    <script type="module">
+        import { animate } from './src/delicious-chocolatey-goodness/index';
+        const actions = [
+            { id: 'biscuit-01', action: 'new-biscuit' },
+            { id: 'biscuit-02', action: 'new-biscuit' },
+            { id: 'biscuit-01', action: 'bite-arbitrary-corner' },
+            { id: 'biscuit-02', action: 'bite-arbitrary-corner' },
+            { id: 'biscuit-01', action: 'bite-opposite-corner' },
+            { id: 'biscuit-02', action: 'bite-opposite-corner' },
+            { id: 'biscuit-01', action: 'insert-into-mug' },
+            { id: 'biscuit-02', action: 'insert-into-mug' },
+            { id: 'biscuit-01', action: 'draw-liquid' },
+            // { id: 'biscuit-01', action: 'consume' },
+        ];
+        animate(actions, { cadence: 1000 });
+    </script>
+</body>
+
+</html>

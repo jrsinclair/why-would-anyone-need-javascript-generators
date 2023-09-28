@@ -79,25 +79,69 @@ function createBiscuit(id: string) {
 
 function newBiscuit(id: string) {
   const wrapper: HTMLElement = document.querySelector('.biscuits') ?? createWrapper();
-  const bikky = createBiscuit(id);
-  wrapper.appendChild(bikky);
-  return bikky;
+  const biscuit = createBiscuit(id);
+  wrapper.appendChild(biscuit);
+  return biscuit;
 }
 
 function animateBiteArbitraryCorner(id: string) {
-  const biscuit: HTMLElement = ($(`#${id}`) as HTMLElement | null) ?? newBiscuit(id);
+  const biscuit = $(`#${id}`) ?? newBiscuit(id);
   if (!biscuit) newBiscuit(id);
   biscuit.classList.add('once-bitten');
   biscuit.innerHTML = 'Bitten biscuit';
   return biscuit;
 }
 
+function animateBiteOppositeCorner(id: string) {
+  const biscuit = $(`#${id}`) ?? createBiscuit(id);
+  biscuit.classList.add('twice-bitten');
+  biscuit.classList.remove('once-bitten');
+  biscuit.innerHTML = 'Twice bitten biscuit';
+  return biscuit;
+}
+
 function createMug() {
-  const mug = document.createElement('ul');
+  const mug = document.createElement('div');
   mug.innerHTML = 'Mug';
   mug.classList.add('mug');
   document.body.appendChild(mug);
+  const mugAfter = document.createElement('div');
+  mugAfter.classList.add('mug-after');
+  document.body.appendChild(mugAfter);
   return mug;
+}
+
+function animateInsertIntoMug(id: string) {
+  $('.mug') || createMug();
+  const biscuit = $(`#${id}`) ?? createBiscuit(id);
+  biscuit.classList.add('in-mug');
+  biscuit.classList.remove('twice-bitten', 'once-bitten');
+  biscuit.innerHTML = 'Biscuit with corner in mug';
+  return biscuit;
+}
+
+function createTopOfHead() {
+  const topOfHead = document.createElement('div');
+  topOfHead.innerHTML = 'Person';
+  topOfHead.classList.add('top-of-head');
+  document.body.appendChild(topOfHead);
+  return topOfHead;
+}
+
+function createSmile() {
+  const smile = document.createElement('div');
+  smile.classList.add('smile');
+  smile.innerHTML = '😋';
+  document.body.appendChild(smile);
+  return smile;
+}
+
+function animateConsume(id: string) {
+  $('.smile') || createSmile();
+  $('.top-of-head')?.classList.add('hidden');
+  const biscuit = $(`#${id}`);
+  biscuit && biscuit?.parentElement?.removeChild(biscuit);
+  return biscuit;
 }
 
 interface AnimationOptions {
@@ -125,8 +169,17 @@ export async function animate(
         if (action === 'bite-arbitrary-corner') {
           animateBiteArbitraryCorner(id);
         }
+        if (action === 'bite-opposite-corner') {
+          animateBiteOppositeCorner(id);
+        }
         if (action === 'insert-into-mug') {
-          $('.mug') || createMug();
+          animateInsertIntoMug(id);
+        }
+        if (action === 'draw-liquid') {
+          $('.top-of-head') || createTopOfHead();
+        }
+        if (action === 'consume') {
+          animateConsume(id);
         }
         return delay(cadence, undefined);
       }),

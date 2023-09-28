@@ -5,9 +5,18 @@ import '@testing-library/jest-dom';
 import fc from 'fast-check';
 import { screen } from '@testing-library/dom';
 import { type AnimationAction, type BiscuitAnimation, animate } from './index';
+import fs from 'node:fs';
 
 const resetDOM = () => {
   document.body.innerHTML = '';
+};
+
+const addStylesheet = () => {
+  const styles = fs.readFileSync(__dirname + '/index.css').toString('utf-8');
+  const stylesheet = document.createElement('style');
+  stylesheet.innerHTML = styles;
+  stylesheet.setAttribute('type', 'text/css');
+  document.head.appendChild(stylesheet);
 };
 
 // const hasOverlap = (els: ReadonlyArray<HTMLElement>) =>
@@ -57,17 +66,8 @@ const bikkySequence = (id: string, size: 1 | 2 | 3 | 4 | 5 | 6): ReadonlyArray<B
     .slice(0, size)
     .map((action) => ({ id, action }));
 
-const oneTwoThree = [1, 2, 3] as const;
 const oneToFour = [1, 2, 3, 4] as const;
 const oneToFive = [1, 2, 3, 4, 5] as const;
-
-const genBikkySequence = () =>
-  fc
-    .uniqueArray(genIdString, { minLength: 2 })
-    .chain((ids) =>
-      fc.tuple(...ids.map((id) => fc.tuple(fc.constant(id), fc.constantFrom(...oneTwoThree)))),
-    )
-    .map((pairs) => pairs.flatMap(([id, size]) => bikkySequence(id, size)));
 
 const genBikkySequenceToMug = (arrayOpts?: fc.ArrayConstraints) =>
   fc
@@ -77,7 +77,17 @@ const genBikkySequenceToMug = (arrayOpts?: fc.ArrayConstraints) =>
     )
     .map((pairs) => pairs.flatMap(([id, size]) => bikkySequence(id, size)));
 
+const genBikkySequenceToDrawLiquid = (arrayOpts?: fc.ArrayConstraints) =>
+  fc
+    .uniqueArray(genIdString, arrayOpts)
+    .chain((ids) =>
+      fc.tuple(...ids.map((id) => fc.tuple(fc.constant(id), fc.constantFrom(...oneToFive)))),
+    )
+    .map((pairs) => pairs.flatMap(([id, size]) => bikkySequence(id, size)));
+
 describe('animate()', () => {
+  beforeAll(addStylesheet);
+
   afterEach(resetDOM);
 
   // Rendering a biscuit should add an element with class biscuit to the DOM
@@ -132,6 +142,24 @@ describe('animate()', () => {
     );
   });
 
+  it('should render an element with class twice-bitten when animating bite-opposite-corner', () => {
+    const genActions = genIdString.map((id) => [
+      { id, action: 'new-biscuit' } as const,
+      { id, action: 'bite-arbitrary-corner' } as const,
+      { id, action: 'bite-opposite-corner' } as const,
+    ]);
+    return fc.assert(
+      fc
+        .asyncProperty(genActions, async (actions) => {
+          await animate(actions, { cadence: 0 });
+          expect(
+            screen.queryAllByText('Twice bitten biscuit', { selector: '.twice-bitten' }),
+          ).toHaveLength(1);
+        })
+        .afterEach(resetDOM),
+    );
+  });
+
   // Rendering a straw position biscuit should result in an element with class mug being in the DOM
   it('should render a mug element when there is an insert-into-mug action', async () => {
     const actions: BiscuitAnimation[] = [
@@ -142,6 +170,9 @@ describe('animate()', () => {
     ];
     await animate(actions, { cadence: 0 });
     expect(screen.queryAllByText('Mug', { selector: '.mug' })).toHaveLength(1);
+    expect(
+      screen.queryAllByText('Biscuit with corner in mug', { selector: '.in-mug' }),
+    ).toHaveLength(1);
   });
 
   // There should only ever be one mug element
@@ -155,11 +186,49 @@ describe('animate()', () => {
   });
 
   // Rendering a flavour explosion biscuit should result in an element with class top-of-head being in the DOM
+  it('should render a top-of-head element when there is a draw-liquid action', async () => {
+    const actions: BiscuitAnimation[] = [
+      { id: 'biscuit-01', action: 'new-biscuit' },
+      { id: 'biscuit-01', action: 'bite-arbitrary-corner' },
+      { id: 'biscuit-01', action: 'bite-opposite-corner' },
+      { id: 'biscuit-01', action: 'insert-into-mug' },
+      { id: 'biscuit-01', action: 'draw-liquid' },
+    ];
+    await animate(actions, { cadence: 0 });
+    expect(screen.queryAllByText('Person', { selector: '.top-of-head' })).toHaveLength(1);
+    expect(
+      screen.queryAllByText('Biscuit with corner in mug', { selector: '.in-mug' }),
+    ).toHaveLength(1);
+  });
 
   // There should only ever be one top-of-head element
+  it('should only ever render a single top-of-head element', async () => {
+    return fc.assert(
+      fc.asyncProperty(genBikkySequenceToDrawLiquid(), async (actions) => {
+        await animate(actions, { cadence: 0 });
+        expect(screen.queryAllByText('Person', { selector: '.head' }).length).toBeLessThanOrEqual(
+          1,
+        );
+      }),
+    );
+  });
 
   // A consumed biscuit should not be visible, but should result in a smiley face being visible if
   // there are no flavour-explosion biscuits rendered.
+  it('should hide consumed biscuits and show a smiley face', async () => {
+    const actions: BiscuitAnimation[] = [
+      { id: 'biscuit-01', action: 'new-biscuit' },
+      { id: 'biscuit-01', action: 'bite-arbitrary-corner' },
+      { id: 'biscuit-01', action: 'bite-opposite-corner' },
+      { id: 'biscuit-01', action: 'insert-into-mug' },
+      { id: 'biscuit-01', action: 'draw-liquid' },
+      { id: 'biscuit-01', action: 'consume' },
+    ];
+    await animate(actions, { cadence: 0 });
+    expect(screen.queryByText('Person', { selector: '.top-of-head' })).not.toBeVisible();
+    expect(screen.queryByText(/biscuit/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('😋', { selector: '.smile' })).toBeVisible();
+  });
 
   // The top of all visible biscuits should always be higher than the top of the mug
 
