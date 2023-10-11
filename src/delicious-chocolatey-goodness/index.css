@@ -11,6 +11,8 @@
   --text-bg-color: var(--midnight);
   --text-color: var(--emigre-light);
   --code-bg: var(--slate);
+
+  --cadence: 1s;
 }
 
 /* Typography
@@ -19,6 +21,12 @@
 body {
   color: var(--text-color);
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  margin-top: 1rem;
 }
 
 /* Background
@@ -62,15 +70,19 @@ body {
 .biscuits,
 .mug,
 .mug-after,
-.top-of-head {
-  max-width: 64em;
-  margin: 0 auto;
+.top-of-head,
+.smile,
+h1 {
+  max-width: 90.75rem;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0;
 }
 
 .biscuits {
   display: flex;
   flex-direction: row;
+  min-height: 11.81622966em;
 }
 
 .biscuit {
@@ -81,10 +93,10 @@ body {
   background-size: contain;
   color: transparent;
   transition:
-    clip-path ease-in 1s,
-    translate ease-in-out 1s,
-    rotate ease-in-out 1s,
-    margin-right ease-in 1s;
+    clip-path ease-in var(--cadence),
+    translate ease-in-out var(--cadence),
+    rotate ease-in-out var(--cadence),
+    margin-right ease-in var(--cadence);
   clip-path: polygon(0 0, 100% 0, 100% 0, 100% 0, 100% 100%, 0 100%, 0 100%, 0 100%);
   margin-right: 2em;
 }
@@ -99,43 +111,45 @@ body {
 }
 
 .in-mug {
-  translate: 350% 145%;
+  translate: 350% 248%;
   rotate: -30deg;
-  margin-right: -4em;
+  margin-right: -4.25em;
+}
+
+.mug-after,
+.mug {
+  background-size: contain;
+  height: 12.44201183em;
+  width: 32.25em;
+  position: relative;
+  left: -7%;
 }
 
 .mug {
-  background-size: contain;
-  background: url(../assets/mug.svg) center center no-repeat transparent;
-  height: 12.44201183em;
-  margin-top: 11.81622966em;
-  width: 32.25em;
+  background: url(../assets/mug.svg) 33% center no-repeat transparent;
+  margin-top: 24em;
   position: relative;
   z-index: -1;
   color: transparent;
 }
 
 .mug-after {
-  background-size: contain;
   background: url(../assets/mug-front.svg) center center no-repeat transparent;
-  height: 12.44201183em;
-  width: 32.25em;
   display: block;
   top: -12.44201183em;
-  left: 0;
   z-index: 1;
   content: ' ';
-  position: relative;
 }
 
-.top-of-head {
+.top-of-head,
+.smile {
   color: transparent;
   position: relative;
 }
 
-.top-of-head::after {
+.top-of-head::after,
+.smile::after {
   color: #fff;
-  content: '😙';
   position: absolute;
   display: block;
   font-size: 16em;
@@ -144,6 +158,18 @@ body {
   top: -2.890625em;
   left: 0.7421875em;
   z-index: -1;
+}
+
+.top-of-head::after {
+  content: '😙';
+}
+
+.smile::after {
+  content: '😋';
+}
+
+.waiting::after {
+  content: '🙂';
 }
 
 /* Utilities

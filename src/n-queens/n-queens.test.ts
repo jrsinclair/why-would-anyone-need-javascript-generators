@@ -1,5 +1,5 @@
 import fc, { type Arbitrary } from 'fast-check';
-import { type Nat, attacks, queens, natToArray, transpose, diffs, isValidSolution } from '.';
+import { type Nat, attacks, queens, natToArray, transpose, isValidSolution } from '.';
 
 const genNat = (max: number = 998) => fc.nat({ max: Math.min(998, max) }) as Arbitrary<Nat>;
 
@@ -104,17 +104,6 @@ describe('transpose()', () => {
 });
 
 describe.each`
-  input               | expected
-  ${[0, 1]}           | ${[1]}
-  ${[0, 1, 2]}        | ${[1, 1]}
-  ${[1, 2, 4, 7, 11]} | ${[1, 2, 3, 4]}
-`('diffs()', ({ input, expected }) => {
-  it(`should return ${JSON.stringify(expected)} when given ${JSON.stringify(input)}`, () => {
-    expect(diffs(new Uint8Array(input))).toEqual(new Int8Array(expected));
-  });
-});
-
-describe.each`
   n    | x    | digits
   ${1} | ${0} | ${[0]}
   ${2} | ${0} | ${[0, 0]}
@@ -178,10 +167,18 @@ describe.each`
   ${1} | ${[[0, 0]]}
   ${2} | ${[]}
   ${3} | ${[]}
-  ${4} | ${[[1, 0], [3, 1], [0, 2], [2, 3]]}
+  ${4} | ${[[0, 1], [1, 3], [2, 0], [3, 2]]}
+  ${5} | ${[[0, 0], [1, 2], [2, 4], [3, 1], [4, 3]]}
 `('queens()', ({ n, expected }) => {
   it(`should return expected result for n = ${n}`, () => {
     expect([...queens(n)]).toEqual(expected);
+  });
+});
+
+describe('queens()', () => {
+  it('should find a solution of length 8 for the 8-queens problem', () => {
+    const actual = queens(8);
+    expect(actual).toHaveLength(8);
   });
 });
 

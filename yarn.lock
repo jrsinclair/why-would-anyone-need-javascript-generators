@@ -2296,6 +2296,11 @@
   resolved "https://packages.atlassian.com/api/npm/npm-remote/@types/reveal.js/-/reveal.js-4.4.2.tgz#bc6248b6236ee7af7ef108eb5d8c947772a04ea9"
   integrity sha512-z+lVPEWGPFrPv3S9Mx2qLKXA4zT+Mo3GxvW68OR7lbUcCmqjn4vjaQJ2qCW+xNkBUgfR8d3fzLWHmu1PIfRiIA==
 
+"@types/reveal@^4.2.0":
+  version "4.2.0"
+  resolved "https://packages.atlassian.com/api/npm/npm-remote/@types/reveal/-/reveal-4.2.0.tgz#03695a7785fbb0c1050bae85930229bb17effabc"
+  integrity sha512-lhTCUrk8pU/9SWcqbLwCy/AFjCp9S2hcDGoKAIycWGcHujUrDKMXWVkOvbSWk/gohZwwfuxQxucBaqvYAM5DTQ==
+
 "@types/stack-utils@^2.0.0":
   version "2.0.1"
   resolved "https://packages.atlassian.com/api/npm/npm-remote/@types/stack-utils/-/stack-utils-2.0.1.tgz#20f18294f797f2209b5f65c8e3b5c8e8261d127c"
@@ -3235,6 +3240,11 @@ fb-watchman@^2.0.0:
   dependencies:
     bser "2.1.1"
 
+fclone@^1.0.11:
+  version "1.0.11"
+  resolved "https://packages.atlassian.com/api/npm/npm-remote/fclone/-/fclone-1.0.11.tgz#10e85da38bfea7fc599341c296ee1d77266ee640"
+  integrity sha512-GDqVQezKzRABdeqflsgMr7ktzgF9CyS+p2oe0jJqUY6izSSbhPIQJDpoU4PtGcD7VPM9xh/dVrTu6z1nwgmEGw==
+
 file-entry-cache@^6.0.1:
   version "6.0.1"
   resolved "https://packages.atlassian.com/api/npm/npm-remote/file-entry-cache/-/file-entry-cache-6.0.1.tgz#211b2dd9659cb0394b073e7323ac3c933d522027"
@@ -3294,6 +3304,11 @@ form-data@^4.0.0:
     asynckit "^0.4.0"
     combined-stream "^1.0.8"
     mime-types "^2.1.12"
+
+fp-ts@^2.16.1:
+  version "2.16.1"
+  resolved "https://packages.atlassian.com/api/npm/npm-remote/fp-ts/-/fp-ts-2.16.1.tgz#6abc401ce42b65364ca8f0b0d995c5840c68a930"
+  integrity sha512-by7U5W8dkIzcvDofUcO42yl9JbnHTEDBrzu3pt5fKT+Z4Oy85I21K80EYJYdjQGC2qum4Vo55Ag57iiIK4FYuA==
 
 fs.realpath@^1.0.0:
   version "1.0.0"
@@ -4757,7 +4772,37 @@ postcss-value-parser@^4.2.0:
   resolved "https://packages.atlassian.com/api/npm/npm-remote/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz#723c09920836ba6d3e5af019f92bc0971c02e514"
   integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
-posthtml-parser@^0.10.1:
+posthtml-doctype@^1.1.1:
+  version "1.1.1"
+  resolved "https://packages.atlassian.com/api/npm/npm-remote/posthtml-doctype/-/posthtml-doctype-1.1.1.tgz#d3e4204b6551c9ce5e1d45365b46564785ba3b9b"
+  integrity sha512-G5Flc83qRhN9mSls93C/djIbElynPzqZ3sPpVISNr3/9uXuByILHhSh8yXODeCwIxggB65szy1tnY8xOWT8lyw==
+
+posthtml-expressions@^1.7.1:
+  version "1.11.1"
+  resolved "https://packages.atlassian.com/api/npm/npm-remote/posthtml-expressions/-/posthtml-expressions-1.11.1.tgz#1e1f8914d49ddd1a8dcabd9ed911078efb8908f7"
+  integrity sha512-2zA5SRM7quupTGa422xH72T0n3tF5quZeZ66czmMa/4QAj8HFzCTlN5l42wWVjLCxj7XOmMmQJEeK0+p3AgH+w==
+  dependencies:
+    fclone "^1.0.11"
+    posthtml "^0.16.5"
+    posthtml-match-helper "^1.0.1"
+    posthtml-parser "^0.10.0"
+    posthtml-render "^3.0.0"
+
+posthtml-include@^1.7.4:
+  version "1.7.4"
+  resolved "https://packages.atlassian.com/api/npm/npm-remote/posthtml-include/-/posthtml-include-1.7.4.tgz#45e7abd18395ce5a6e8af9dc5c5390f85cf6171c"
+  integrity sha512-GO5QzHiM6/fXq8DxLoLN+jEW4sH/6nuGF9z+NJmP1qi1A3J2zCC7WwXrEwaPL3T8LrH+FL4IedK+mIJHbn5ZEA==
+  dependencies:
+    posthtml "^0.16.6"
+    posthtml-expressions "^1.7.1"
+    posthtml-parser "^0.11.0"
+
+posthtml-match-helper@^1.0.1:
+  version "1.0.3"
+  resolved "https://packages.atlassian.com/api/npm/npm-remote/posthtml-match-helper/-/posthtml-match-helper-1.0.3.tgz#9308f0bdc66398735f7117441feca64f131956d5"
+  integrity sha512-aeRAPvok2Fs6uzSm85665jdAk5UOd8US2QCkWtGU6yLPlKSwzWTSgZZuABc3UeNy3K1lVk/HV9bRkWJYN05Ymw==
+
+posthtml-parser@^0.10.0, posthtml-parser@^0.10.1:
   version "0.10.2"
   resolved "https://packages.atlassian.com/api/npm/npm-remote/posthtml-parser/-/posthtml-parser-0.10.2.tgz#df364d7b179f2a6bf0466b56be7b98fd4e97c573"
   integrity sha512-PId6zZ/2lyJi9LiKfe+i2xv57oEjJgWbsHGGANwos5AvdQp98i6AtamAl8gzSVFGfQ43Glb5D614cvZf012VKg==
@@ -4778,7 +4823,7 @@ posthtml-render@^3.0.0:
   dependencies:
     is-json "^2.0.1"
 
-posthtml@^0.16.4, posthtml@^0.16.5:
+posthtml@^0.16.4, posthtml@^0.16.5, posthtml@^0.16.6:
   version "0.16.6"
   resolved "https://packages.atlassian.com/api/npm/npm-remote/posthtml/-/posthtml-0.16.6.tgz#e2fc407f67a64d2fa3567afe770409ffdadafe59"
   integrity sha512-JcEmHlyLK/o0uGAlj65vgg+7LIms0xKXe60lcDOTU7oVX/3LuEuLwrQpW3VJ7de5TaFKiW4kWkaIpJL42FEgxQ==

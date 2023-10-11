@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tim Tam Slam Animation</title>
+    <link rel="stylesheet" href="./src/delicious-chocolatey-goodness/index.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        .biscuits {
+            --cadence: 300ms;
+        }
+    </style>
+</head>
+
+<body class="slam-bg">
+    <div class="fog-bg">
+        <div class="fog_layer"></div>
+    </div>
+    <h1>The Slam</h1>
+
+    <script type="module">
+        import { animate, getBiscuit, biteArbitraryCorner, biteOppositeCorner, insertIntoBeverage, drawLiquid, insertIntoMouth } from './src/delicious-chocolatey-goodness/index';
+        const MAX_BISCUIT_CONSUMPTION = 5;
+        const list = []
+        const biscuits = (new Array(11)).fill(undefined).map((_, i) => getBiscuit(`biscuit-${i}`, list));
+        const pipe = (startValue, ...functions) => functions.reduce(
+            (val, f) => f(val),
+            startValue
+        );
+        const map = (transform) => function* (iterable) {
+            for (let item of iterable) {
+                yield transform(item);
+            }
+        }
+        const take = (maxResults) => function* (iterable) {
+            let count = 0;
+            for (const item of iterable) {
+                if (count >= maxResults) return;
+                yield item;
+                count += 1;
+            }
+        }
+        const anim = () => {
+            const result = pipe(biscuits,
+                map(biteArbitraryCorner),
+                map(biteOppositeCorner),
+                map(insertIntoBeverage),
+                map(drawLiquid),
+                map(insertIntoMouth),
+                take(MAX_BISCUIT_CONSUMPTION)
+            );
+            animate(Array.from(result), { cadence: 300 });
+        }
+        document.body.addEventListener('click', anim);
+    </script>
+</body>
+
+</html>

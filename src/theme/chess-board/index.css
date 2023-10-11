@@ -1,0 +1,263 @@
+:root {
+  --ink: #04040c;
+  --slate: #092d34;
+  --midnight: #0b2752;
+  --emigre-light: #faf0e6;
+  --bgsize: 25%;
+  --chess-dark: rgb(209, 139, 71);
+  --chess-light: rgb(255, 206, 158);
+  --chess-border: #8c4704;
+}
+
+body {
+  background: var(--midnight);
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  font-family: 'Munson', 'Georgia', serif;
+  font-variant-numeric: tabular-nums;
+}
+
+.ChessBoard-wrapper {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  max-width: 64em;
+}
+
+.ChessBoard {
+  box-sizing: border-box;
+  border-radius: 3.25%;
+  position: relative;
+  width: 100%;
+  /* height: 100%; */
+  /* margin: 3.125% auto; */
+  background: var(--chess-border);
+  padding: 3.125%;
+}
+
+.ChessBoard-board {
+  position: relative;
+  padding: 100% 0 0 0;
+  background: repeating-conic-gradient(
+      from 0deg,
+      var(--chess-dark) 0% 25%,
+      var(--chess-light) 0% 50%
+    )
+    50% / var(--bgsize) var(--bgsize);
+  margin: 0;
+}
+
+.Piece {
+  position: absolute;
+  list-style: none;
+  height: 12.5%;
+  width: 12.5%;
+  top: 0;
+  left: 0;
+  background: transparent url('../../assets/queen.svg') center center no-repeat;
+  transition:
+    left 100ms ease-in-out,
+    top 100ms ease-in-out;
+}
+
+.Piece-location {
+  color: transparent;
+}
+
+.ChessBoard-index {
+  left: 0;
+  bottom: 0;
+  padding: 0 3.18091451%;
+  margin: 0;
+  list-style: none;
+  width: 100%;
+  color: var(--emigre-light);
+  position: absolute;
+  display: flex;
+  box-sizing: border-box;
+}
+
+.ChessBoard-indexNumeral {
+  width: 12.5%;
+  text-align: center;
+  position: relative;
+  line-height: 32px;
+}
+
+/* Queen Locations
+ * ------------------------------------------------------------------------------ */
+
+.Piece--00,
+.Piece--01,
+.Piece--02,
+.Piece--03,
+.Piece--04,
+.Piece--05,
+.Piece--06,
+.Piece--07 {
+  left: 0;
+}
+.Piece--10,
+.Piece--11,
+.Piece--12,
+.Piece--13,
+.Piece--14,
+.Piece--15,
+.Piece--16,
+.Piece--17 {
+  left: 12.5%;
+}
+.Piece--20,
+.Piece--21,
+.Piece--22,
+.Piece--23,
+.Piece--24,
+.Piece--25,
+.Piece--26,
+.Piece--27 {
+  left: 25%;
+}
+.Piece--30,
+.Piece--31,
+.Piece--32,
+.Piece--33,
+.Piece--34,
+.Piece--35,
+.Piece--36,
+.Piece--37 {
+  left: 37.5%;
+}
+.Piece--40,
+.Piece--41,
+.Piece--42,
+.Piece--43,
+.Piece--44,
+.Piece--45,
+.Piece--46,
+.Piece--47 {
+  left: 50%;
+}
+.Piece--50,
+.Piece--51,
+.Piece--52,
+.Piece--53,
+.Piece--54,
+.Piece--55,
+.Piece--56,
+.Piece--57 {
+  left: 62.5%;
+}
+.Piece--60,
+.Piece--61,
+.Piece--62,
+.Piece--63,
+.Piece--64,
+.Piece--65,
+.Piece--66,
+.Piece--67 {
+  left: 75%;
+}
+.Piece--70,
+.Piece--71,
+.Piece--72,
+.Piece--73,
+.Piece--74,
+.Piece--75,
+.Piece--76,
+.Piece--77 {
+  left: 87.5%;
+}
+
+.Piece--00,
+.Piece--10,
+.Piece--20,
+.Piece--30,
+.Piece--40,
+.Piece--50,
+.Piece--60,
+.Piece--70 {
+  top: 0;
+}
+
+.Piece--01,
+.Piece--11,
+.Piece--21,
+.Piece--31,
+.Piece--41,
+.Piece--51,
+.Piece--61,
+.Piece--71 {
+  top: 12.5%;
+}
+
+.Piece--02,
+.Piece--12,
+.Piece--22,
+.Piece--32,
+.Piece--42,
+.Piece--52,
+.Piece--62,
+.Piece--72 {
+  top: 25%;
+}
+
+.Piece--03,
+.Piece--13,
+.Piece--23,
+.Piece--33,
+.Piece--43,
+.Piece--53,
+.Piece--63,
+.Piece--73 {
+  top: 37.5%;
+}
+
+.Piece--04,
+.Piece--14,
+.Piece--24,
+.Piece--34,
+.Piece--44,
+.Piece--54,
+.Piece--64,
+.Piece--74 {
+  top: 50%;
+}
+
+.Piece--05,
+.Piece--15,
+.Piece--25,
+.Piece--35,
+.Piece--45,
+.Piece--55,
+.Piece--65,
+.Piece--75 {
+  top: 62.5%;
+}
+
+.Piece--06,
+.Piece--16,
+.Piece--26,
+.Piece--36,
+.Piece--46,
+.Piece--56,
+.Piece--66,
+.Piece--76 {
+  top: 75%;
+}
+
+.Piece--07,
+.Piece--17,
+.Piece--27,
+.Piece--37,
+.Piece--47,
+.Piece--57,
+.Piece--67,
+.Piece--77 {
+  top: 87.5%;
+}

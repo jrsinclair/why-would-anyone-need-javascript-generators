@@ -5,46 +5,36 @@
     <link rel="stylesheet" href="node_modules/reveal.js/dist/reveal.css" />
     <link rel="stylesheet" href="node_modules/reveal.js/dist/theme/black.css" />
     <link rel="stylesheet" href="node_modules/highlight.js/styles/base16/gruvbox-dark-hard.css" />
+    <link rel="stylesheet" href="src/theme/index.css" />
 </head>
 
 <body>
     <div class="reveal">
         <div class="slides">
             <section data-markdown>
-                <label for="talk">The talk:</label>
-                <textarea id="talk" data-template>
-# Why would anyone need JavaScript generator functions?
+                # Why would anyone need JavaScript generator functions?
 
----
+                ---
 
-## You might not need generator functions
+                ## Pedantry
 
----
+                ---
 
-## Perhaps you don’t need promises
+                ## Why would anyone _care_ about generator functions?
 
----
+                ---
 
-<img src="src/assets/carmm-2018.png" alt="" />
+                1. Efficient code <!-- .element: class="fragment" -->
+                2. Impossible code <!-- .element: class="fragment" -->
+                3. Safer code <!-- .element: class="fragment" -->
 
----
+                ---
 
-## You might not care about generator functions
+                ## What is a generator function?
 
----
-
-1. Efficient code <!-- .element: class="fragment" -->
-2. Impossible code <!-- .element: class="fragment" -->
-3. Safer code <!-- .element: class="fragment" -->
-
----
-
-## What is a generator function?
-
----
-
-```javascript [|1|3-8|11-13|16]
-function* myGeneratorFunction() {
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code data-line-numbers="1|5|10|13">function* myGeneratorFunction() {
     // We create some data
     const claim01 = 'Efficient code';
     console.log('Created some data. Yielding', claim01);
@@ -58,75 +48,320 @@ function* myGeneratorFunction() {
     // The line below might not do what you think it does.
     return 42;
 }
-```
-
----
-
-## What happens if we run this function?
-
----
-
-```javascript
+</code></pre>
+            </section>
+            <section data-markdown>
+                ### What happens if we run this function?
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>
 let generator = myGeneratorFunction();
-```
+            </code></pre>
+            </section>
+            <section data-markdown>
+                ### It doesn't do anything
 
----
+                ---
 
-## It doesn't do anything
-
----
-
-## A generator object
-
----
-
-```javascript
-function runGenerator(generator) {
+                ### A generator object
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>function runGenerator(generator) {
     let result;
     do {
         result = generator.next();
         console.log(result);
     } while (!result.done);
 }
-```
+</code></pre>
+            </section>
+            <section data-markdown>
+                ### So what?
 
----
+                ---
 
-## So what?
+                ### Like arrays, but more awkward
 
----
+                ---
 
-## Like arrays, but more awkward
+                ## Efficient code
 
----
+                ---
 
-## Efficient code
+                ### The Tim Tam Slam
 
----
+                ---
 
-## The Tim Tam Slam
+                1. Select a single biscuit.
+                2. Bite a small chunk from one corner, 2&ndash;5&thinsp;mm from the apex.
+                3. Repeat the bite on the diagonally opposite corner.
+                4. Insert one of the bitten corners into a hot beverage. (Milo is traditional, but coffee, tea, or hot
+                chocolate is also acceptable).
+                5. Place your lips over the opposite corner, and draw liquid through the biscuit as if it were a straw.
+                6. As soon as liquid enters your mouth, immediately consume the entire biscuit. It’s important to do
+                this quickly before it loses its structural integrity.
+                7. Repeat until there are no more Tim Tams, or you feel physically ill.
 
----
+                ---
 
-1. Select a single biscuit.
-2. Bite a small chunk from one corner, 2&ndash;5&thinsp;mm from the apex.
-3. Repeat the bite on the diagonally opposite corner.
-4. Insert one of the bitten corners into a hot beverage. (Milo is traditional, but coffee, tea, or hot chocolate is also acceptable).
-5. Place your lips over the opposite corner, and draw liquid through the biscuit as if it were a straw.
-6. As soon as liquid enters your mouth, immediately consume the entire biscuit. It’s important to do this quickly before it loses its structural integrity.
-7. Repeat until there are no more Tim Tams, or you feel physically ill.
+                ```javascript
+                const bittenBiscuit = biteArbitraryCorner(biscuit);
+                const doubleBitten = biteOppositeCorner(bittenBiscuit);
+                const biscuitInBeverage = insertIntoBeverage(doubleBitten);
+                const unstableBiscuit = drawLiquid(biscuitInBeverage);
+                const deliciousness = insertIntoMouth(unstableBiscuit);
+                ```
+            </section>
+            <section data-background-iframe="/slam-animation.html" data-background-interactive>
+            </section>
+            <section data-markdown>
+                ## But what if we have a whole packet of biscuits?
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>
+// A naive approach
+const MAX_BISCUIT_CONSUMPTION = 5;
+biscuits
+    .map(biteArbitraryCorner)
+    .map(bitOppositeCorner)
+    .map(insertIntoBeverage)
+    .map(drawLiquid)
+    .map(insertIntoMouth)
+    .slice(0, MAX_BISCUIT_CONSUMPTION);
+                </code></pre>
+            </section>
+            <section data-background-iframe="/slam-asplode.html" data-background-interactive>
+            </section>
+            <section data-markdown>
+                ### How do we fix it?
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>
+const map = (transform) => function*(iterable) {
+    for (let item of iterable) {
+        yield transform(item);
+    }
+}
+                </code></pre>
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>
+const take = (maxResults) => function* (iterable) {
+    let count = 0;
+    for (const item of iterable) {
+      if (count >= maxResults) return;
+      yield item;
+      count += 1;
+    }
+}
+                </code></pre>
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>
+const pipe = (startValue, ...functions) => functions.reduce(
+    (val, f) => f(val),
+    startValue
+);
+                </code></pre>
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>
+pipe(biscuits,
+    map(biteArbitraryCorner),
+    map(biteOppositeCorner),
+    map(insertIntoBeverage),
+    map(drawLiquid),
+    map(insertIntoMouth),
+    take(MAX_BISCUIT_CONSUMPTION)
+);
+                </code></pre>
+            </section>
+            <section data-background-iframe="/slam-multiple.html" data-background-interactive></section>
+            <section data-markdown>
+                ### Why does that work?
 
----
+                ---
 
-```javascript
-const bittenBiscuit = biteArbitraryCorner(biscuit);
-const doubleBitten = biteOppositeCorner(bittenBiscuit);
-const biscuitInBeverage = insertIntoBeverage(doubleBitten);
-const unstableBiscuit = drawLiquid(biscuitInBeverage);
-insertIntoMouth(unstableBiscuit);
-```
+                ### Generators are lazy
 
-                </textarea>
+                ---
+
+                ### But, writing my own utility functions is a pain
+
+                ---
+
+                ### Stage 3 Iterator Helpers Proposal
+
+                `https://github.com/tc39/proposal-iterator-helpers`
+
+                ---
+
+                ## Impossible code
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>function* naturalNumbers() {
+    let i = 0n; // The n means this is a BigInt
+    while (true) {
+        yield i;
+        i += 1n;
+    }
+}</code></pre>
+            </section>
+            <section data-markdown>
+                ### What if we were to filter that?
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>const filter = (shouldKeep) => function* (iterable) {
+    for (let item of iterable) {
+        if (shouldKeep(item)) yield item;
+    }
+}</code></pre>
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>const isEven = x => x % 2n === 0n;</code></pre>
+            </section>
+            <section>
+                <pre data-trim data-noescape
+                    class="javascript"><code>const evens = filter(isEven)(naturalNumbers());</code></pre>
+            </section>
+            <section data-markdown>
+                ### But, of course…
+            </section>
+            <section>
+                <pre data-trim data-noescape
+                    class="javascript"><code>const evens = map(x => x * 2)(naturalNumbers());</code></pre>
+            </section>
+            <section data-markdown>
+                ### What could we build with that?
+
+                * Fibonacci sequence
+                * Triangular numbers
+                * Prime numbers
+            </section>
+            <section data-markdown>
+                ### Boring
+
+                ---
+
+                ### Pointless interview question
+
+                ---
+
+                ### Eight Queens
+
+                ---
+
+                Given an 8&times;8 chess board, find a way to place eight queens on the board
+                safely. That is, place them such that no queen can attack any other queen.
+
+                ---
+
+                _Diagram showing queen's attacks_
+
+                ---
+
+                _Diagram showing 8 queens in a column to explain that no two queens can be in the same column_
+
+                ---
+
+                _Diagram showing 8 queens in a row, showing that we can consider each solution as a base-8 encoding of a
+                natural number_
+
+                ---
+
+                ### 4,426,165,368 &rightarrow; 16,777,216
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>const takeWhile = (shouldYield) => function*(iterable) {
+    for (let item of iterable) {
+        if (!shouldYield(item)) return;
+        yield item;
+    }
+}
+                </code></pre>
+            </section>
+            <section>
+                <pre data-trim data-noescape
+                    class="javascript"><code>const possibleSolutions = takeWhile(x => x < 16777216)(naturalNumbers())</code></pre>
+            </section>
+            <section>
+                <pre data-trim data-noescape
+                    class="javascript"><code>const possibleSolutions = (n) => takeWhile(x => x < n ** n)(naturalNumbers())</code></pre>
+            </section>
+            <section>
+                <pre data-trim data-noescape
+                    class="javascript"><code>const possibleSolutions = (n) => takeWhile(x => x < n ** n)(naturalNumbers())</code></pre>
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>const natToArray = (n) => (x) =>
+    Uint8Array.from({ length: n }).map((_, i) =>
+        Math.floor((x % Math.pow(n, n - i)) / Math.pow(n, n - i - 1)),
+    );</code></pre>
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>const natToArray = (n) => (x) =>
+    Uint8Array.from({ length: n }).map((_, i) =>
+        Math.floor((x % Math.pow(n, n - i)) / Math.pow(n, n - i - 1)),
+    );</code></pre>
+            </section>
+            <section data-markdown>
+                ### How do we check for a valid solution?
+
+                ---
+
+                1. Check for queens in the same row
+                2. Check for queens on the same diagonal
+                3. (We already ruled out queens in the same column)
+            </section>
+            <section>
+                <pre data-trim data-noescape
+                    class="javascript"><code>const noRepeats = (solution) => new Set(solution).size === solution.length;</code></pre>
+            </section>
+            <section data-markdown>
+                ### What about the same diagonal?
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>// Check diagonals for single queen
+// Note the position of x1 and y1
+const attacksDiagonal = (y1, x1, solution) =>
+    solution.some((y2, x2) => Math.abs(x1 - x2) == Math.abs(y1 - y2) && x1 !== x2 && y1 !== y2);
+                  </code></pre>
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>const isValidSolution = (solution) =>
+    noRepeats(solution) && !solution.some(attacksDiagonal);</code></pre>
+            </section>
+            <section data-markdown>
+                ### Two more things
+            </section>
+            <section data-markdown>
+                1. We only want one solution; and
+                2. An array representing a base-8 number is difficult to read.
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>const head = (as) => as.next().value;</code></pre>
+            </section>
+            <section>
+                <pre data-trim data-noescape
+                    class="javascript"><code>const headOrElse = (fallback) => (as) => as.next().value || fallback;</code></pre>
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>// Use spread operator to convert from Uint8Array to regular untyped array.
+const solutionToPoints = (solution) => [...solution].map((y, x) => [x, y]);</code></pre>
+            </section>
+            <section data-markdown>
+                ### Putting it all together…
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>const queens = (n: number): Solution =>
+    pipe(
+        naturalNumbers(),
+        takeWhile((x) => x < n ** n),
+        map(natToArray(n)),
+        filter(isValidSolution),
+        headOrElse(Uint8Array.from([])),
+        solutionToPoints,
+    );</code></pre>
             </section>
         </div>
     </div>

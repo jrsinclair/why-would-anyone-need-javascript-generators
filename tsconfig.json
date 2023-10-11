@@ -3,7 +3,10 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "jsxImportSource": "preact",
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "target": "ES2015",
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext"
   },
   "include": ["jest-setup.js", "./src"],
   "jest": {

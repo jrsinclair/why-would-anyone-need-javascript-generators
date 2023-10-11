@@ -4,7 +4,7 @@
 import '@testing-library/jest-dom';
 import fc from 'fast-check';
 import { screen } from '@testing-library/dom';
-import { type AnimationAction, type BiscuitAnimation, animate } from './index';
+import { type AnimationAction, type BiscuitAnimation, runAnimation } from './index';
 import fs from 'node:fs';
 
 const resetDOM = () => {
@@ -93,7 +93,7 @@ describe('animate()', () => {
   // Rendering a biscuit should add an element with class biscuit to the DOM
   it('when given a new-biscuit action, should add an element with class biscuit to the DOM', async () => {
     const action = { id: 'biscuit-01', action: 'new-biscuit' } as const;
-    await animate([action], { cadence: 0 });
+    await runAnimation([action], { cadence: 0 });
     expect(screen.getByTestId(action.id)).toBeInTheDocument();
   });
 
@@ -101,7 +101,7 @@ describe('animate()', () => {
     return fc.assert(
       fc
         .asyncProperty(genBiscuits(['new-biscuit'], { maxLength: 11 }), async (actions) => {
-          await animate(actions, { cadence: 0 });
+          await runAnimation(actions, { cadence: 0 });
           expect(screen.queryAllByText('Tim Tam', { selector: '.biscuit' })).toHaveLength(
             actions.length,
           );
@@ -133,7 +133,7 @@ describe('animate()', () => {
     return fc.assert(
       fc
         .asyncProperty(genActions, async (actions) => {
-          await animate(actions, { cadence: 0 });
+          await runAnimation(actions, { cadence: 0 });
           expect(
             screen.queryAllByText('Bitten biscuit', { selector: '.once-bitten' }),
           ).toHaveLength(1);
@@ -151,7 +151,7 @@ describe('animate()', () => {
     return fc.assert(
       fc
         .asyncProperty(genActions, async (actions) => {
-          await animate(actions, { cadence: 0 });
+          await runAnimation(actions, { cadence: 0 });
           expect(
             screen.queryAllByText('Twice bitten biscuit', { selector: '.twice-bitten' }),
           ).toHaveLength(1);
@@ -168,7 +168,7 @@ describe('animate()', () => {
       { id: 'biscuit-01', action: 'bite-opposite-corner' },
       { id: 'biscuit-01', action: 'insert-into-mug' },
     ];
-    await animate(actions, { cadence: 0 });
+    await runAnimation(actions, { cadence: 0 });
     expect(screen.queryAllByText('Mug', { selector: '.mug' })).toHaveLength(1);
     expect(
       screen.queryAllByText('Biscuit with corner in mug', { selector: '.in-mug' }),
@@ -179,7 +179,7 @@ describe('animate()', () => {
   it('should only ever render a single mug element', async () => {
     return fc.assert(
       fc.asyncProperty(genBikkySequenceToMug(), async (actions) => {
-        await animate(actions, { cadence: 0 });
+        await runAnimation(actions, { cadence: 0 });
         expect(screen.queryAllByText('Mug', { selector: '.mug' }).length).toBeLessThanOrEqual(1);
       }),
     );
@@ -194,7 +194,7 @@ describe('animate()', () => {
       { id: 'biscuit-01', action: 'insert-into-mug' },
       { id: 'biscuit-01', action: 'draw-liquid' },
     ];
-    await animate(actions, { cadence: 0 });
+    await runAnimation(actions, { cadence: 0 });
     expect(screen.queryAllByText('Person', { selector: '.top-of-head' })).toHaveLength(1);
     expect(
       screen.queryAllByText('Biscuit with corner in mug', { selector: '.in-mug' }),
@@ -205,7 +205,7 @@ describe('animate()', () => {
   it('should only ever render a single top-of-head element', async () => {
     return fc.assert(
       fc.asyncProperty(genBikkySequenceToDrawLiquid(), async (actions) => {
-        await animate(actions, { cadence: 0 });
+        await runAnimation(actions, { cadence: 0 });
         expect(screen.queryAllByText('Person', { selector: '.head' }).length).toBeLessThanOrEqual(
           1,
         );
@@ -224,8 +224,8 @@ describe('animate()', () => {
       { id: 'biscuit-01', action: 'draw-liquid' },
       { id: 'biscuit-01', action: 'consume' },
     ];
-    await animate(actions, { cadence: 0 });
-    expect(screen.queryByText('Person', { selector: '.top-of-head' })).not.toBeVisible();
+    await runAnimation(actions, { cadence: 0 });
+    expect(screen.queryByText('Person', { selector: '.top-of-head' })).not.toBeInTheDocument();
     expect(screen.queryByText(/biscuit/i)).not.toBeInTheDocument();
     expect(screen.queryByText('😋', { selector: '.smile' })).toBeVisible();
   });
@@ -238,4 +238,20 @@ describe('animate()', () => {
 
   // Attempting to render a flavour explosion biscuit and consumed biscuit should be the same as if
   // there was no consumed biscuit
+
+  // When rendering a bite animation, or insert-into-mug, any head should be in waiting mode.
+  it('should set any head element to waiting mode when rendering a bite animation or insert-into-mug', async () => {
+    return fc.assert(
+      fc.asyncProperty(genBikkySequenceToMug({ minLength: 1 }), async (actions) => {
+        actions.splice(
+          1,
+          0,
+          { id: actions[0]?.id, action: 'consume' },
+          { id: actions[0]?.id, action: 'bite-arbitrary-corner' },
+        );
+        await runAnimation(actions, { cadence: 0 });
+        expect(screen.queryByText('🙂', { selector: '.waiting' })).toBeVisible();
+      }),
+    );
+  });
 });

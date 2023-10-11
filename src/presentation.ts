@@ -7,8 +7,10 @@ let deck = new Reveal({
   plugins: [Markdown, Notes, Highlight],
 });
 deck.initialize({
-  width: 1792,
-  height: 1120,
+  width: 1920,
+  height: 1080,
+  progress: false,
+  hash: true,
   markdown: {
     smartypants: true,
   },

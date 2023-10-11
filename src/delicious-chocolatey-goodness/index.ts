@@ -55,10 +55,25 @@ export function biteOppositeCorner({ id, animationList }: BittenBiscuit): TwiceB
   return new TwiceBittenBiscuit(id, animationList);
 }
 
-export function insertIntoMug({ id, animationList }: TwiceBittenBiscuit): StrawPosition {
+export function insertIntoBeverage({ id, animationList }: TwiceBittenBiscuit): StrawPosition {
   animationList.push({ id, action: 'insert-into-mug' });
   return new StrawPosition(id, animationList);
 }
+
+export function drawLiquid({ id, animationList }: StrawPosition): FlavourExplosion {
+  animationList.push({ id, action: 'draw-liquid' });
+  return new FlavourExplosion(id, animationList);
+}
+
+export function insertIntoMouth({ id, animationList }): Consumed {
+  animationList.push({ id, action: 'consume' });
+  return new Consumed(id, animationList);
+}
+
+export const getBiscuit = (id: string, list: BiscuitAnimation[] = defaultAnimationList) => {
+  list.push({ id, action: 'new-biscuit' });
+  return new PristineBiscuit(id, list);
+};
 
 function createWrapper() {
   const wrapper = document.createElement('ul');
@@ -89,6 +104,9 @@ function animateBiteArbitraryCorner(id: string) {
   if (!biscuit) newBiscuit(id);
   biscuit.classList.add('once-bitten');
   biscuit.innerHTML = 'Bitten biscuit';
+  const head = $('.smile, .top-of-head');
+  head?.classList.add('waiting');
+  head && (head.innerHTML = '🙂');
   return biscuit;
 }
 
@@ -128,19 +146,19 @@ function createTopOfHead() {
   return topOfHead;
 }
 
-function createSmile() {
-  const smile = document.createElement('div');
-  smile.classList.add('smile');
-  smile.innerHTML = '😋';
-  document.body.appendChild(smile);
-  return smile;
+function animateDrawLiquid() {
+  const head = $('.top-of-head, .smile') || createTopOfHead();
+  head.classList.add('top-of-head');
+  head.classList.remove('smile', 'waiting');
 }
 
 function animateConsume(id: string) {
-  $('.smile') || createSmile();
-  $('.top-of-head')?.classList.add('hidden');
+  const person = $('.top-of-head, .smile') || createTopOfHead();
+  person.classList.add('smile');
+  person.classList.remove('top-of-head');
+  person.innerHTML = '😋';
   const biscuit = $(`#${id}`);
-  biscuit && biscuit?.parentElement?.removeChild(biscuit);
+  biscuit && biscuit.parentElement?.removeChild(biscuit);
   return biscuit;
 }
 
@@ -156,13 +174,14 @@ function delay<A>(period: number, value: A): Promise<A> {
 
 const $: typeof document.querySelector = document.querySelector.bind(document);
 
-export async function animate(
+export async function runAnimation(
   actions: ReadonlyArray<BiscuitAnimation>,
   { cadence }: AnimationOptions = { cadence: 1000 },
 ) {
   return actions.reduce(
     (promise, { id, action }) =>
       promise.then(() => {
+        const wait = action === 'new-biscuit' ? cadence / 10 : cadence;
         if (action === 'new-biscuit') {
           newBiscuit(id);
         }
@@ -176,13 +195,21 @@ export async function animate(
           animateInsertIntoMug(id);
         }
         if (action === 'draw-liquid') {
-          $('.top-of-head') || createTopOfHead();
+          animateDrawLiquid();
         }
         if (action === 'consume') {
           animateConsume(id);
         }
-        return delay(cadence, undefined);
+        return delay(wait, undefined);
       }),
     Promise.resolve(),
   );
+}
+
+const uniq = <A>(as: ReadonlyArray<A>) => [...new Set(as).values()];
+
+export async function animate(biscuits: ReadonlyArray<Biscuit>, opts) {
+  const lists = biscuits.map((b) => b.animationList);
+  const animationList = uniq(lists).flat();
+  return runAnimation(animationList, opts);
 }
