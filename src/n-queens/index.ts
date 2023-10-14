@@ -31,13 +31,24 @@ const map = <A, B>(transform: (a: A) => B) =>
 
 const head = <A>(as: Generator<A>): A | undefined => as.next().value;
 
-export const natToArray = (n: number) => (x: number) =>
-  Uint8Array.from({ length: n }).map((_, i) =>
-    Math.floor((x % Math.pow(n, n - i)) / Math.pow(n, n - i - 1)),
+export const natToArray = (n: number) => (x: number) => {
+  const radix = Math.max(n, 2);
+  return Uint8Array.from(
+    x
+      .toString(radix)
+      .padStart(n, '0')
+      .split('')
+      .map((i) => parseInt(i, radix)),
   );
+};
+
+// export const natToArray = (n: number) => (x: number) =>
+//   Uint8Array.from({ length: n }).map((_, i) =>
+//     Math.floor((x % Math.pow(n, n - i)) / Math.pow(n, n - i - 1)),
+//   );
 
 function* naturalNumbers() {
-  let i = 0; // The n means this is a BigInt
+  let i = 0;
   while (true) {
     yield i;
     i += 1;
@@ -61,8 +72,6 @@ const first = <A>(shouldYield: (x: A) => boolean) =>
       }
     }
   };
-
-// const solutionArrays = (n: number) => map(natToArray(n), natRange(0, Math.pow(n, n)));
 
 export const transpose = (solution: Uint8Array) => solution.map((_, i) => solution.indexOf(i));
 
