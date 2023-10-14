@@ -69,7 +69,7 @@ body {
   background: transparent url('../../assets/queen.svg') center center no-repeat;
   transition:
     left 100ms ease-in-out,
-    top 100ms ease-in-out;
+    top 10ms ease-in-out;
 }
 
 .Piece-location {
@@ -135,6 +135,7 @@ body {
 .Piece--05,
 .Piece--06,
 .Piece--07 {
+  transition: top 1000ms ease-in-out;
   left: 0;
 }
 .Piece--10,
@@ -145,6 +146,7 @@ body {
 .Piece--15,
 .Piece--16,
 .Piece--17 {
+  transition: top 1000ms ease-in-out;
   left: 12.5%;
 }
 .Piece--20,
@@ -155,6 +157,7 @@ body {
 .Piece--25,
 .Piece--26,
 .Piece--27 {
+  transition: top 1000ms ease-in-out;
   left: 25%;
 }
 .Piece--30,
@@ -165,6 +168,7 @@ body {
 .Piece--35,
 .Piece--36,
 .Piece--37 {
+  transition: top 1000ms ease-in-out;
   left: 37.5%;
 }
 .Piece--40,
@@ -175,8 +179,10 @@ body {
 .Piece--45,
 .Piece--46,
 .Piece--47 {
+  transition: top 1000ms ease-in-out;
   left: 50%;
 }
+
 .Piece--50,
 .Piece--51,
 .Piece--52,
@@ -185,8 +191,10 @@ body {
 .Piece--55,
 .Piece--56,
 .Piece--57 {
+  transition: top 100ms ease-in-out;
   left: 62.5%;
 }
+
 .Piece--60,
 .Piece--61,
 .Piece--62,
@@ -195,8 +203,10 @@ body {
 .Piece--65,
 .Piece--66,
 .Piece--67 {
+  transition: top 10ms ease-in-out;
   left: 75%;
 }
+
 .Piece--70,
 .Piece--71,
 .Piece--72,
@@ -205,6 +215,7 @@ body {
 .Piece--75,
 .Piece--76,
 .Piece--77 {
+  transition: top 1ms ease-in-out;
   left: 87.5%;
 }
 

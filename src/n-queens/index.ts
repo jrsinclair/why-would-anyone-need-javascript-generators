@@ -1,4 +1,5 @@
 import { pipe } from 'fp-ts/function';
+import { zip } from 'fp-ts/lib/Array';
 export type Nat = number;
 
 type Solution = ReadonlyArray<readonly [Nat, Nat]>;
@@ -63,6 +64,18 @@ const takeWhile = <A>(shouldYield: (x: A) => boolean) =>
     }
   };
 
+export const takeUntil = <A>(shouldStop: (x: A) => boolean) => {
+  return function* (iterable: Iterable<A>) {
+    for (let item of iterable) {
+      if (shouldStop(item)) {
+        yield item;
+        return;
+      }
+      yield item;
+    }
+  };
+};
+
 const first = <A>(shouldYield: (x: A) => boolean) =>
   function* (iterable: Iterable<A>) {
     for (let item of iterable) {
@@ -100,3 +113,163 @@ export const queens = (n: number): Solution =>
     headOrElse(Uint8Array.from([])),
     solutionToPoints,
   );
+
+// Animate queens
+// ------------------------------------------------------------------------------------------------
+
+const mapAdjacent = <A, B>(transform: (x: A, y: A) => B) =>
+  function* (xs: IterableIterator<A>) {
+    let { value: prev, done } = xs.next();
+    if (done) return;
+    for (let x of xs) {
+      yield transform(prev, x);
+      prev = x;
+    }
+  };
+
+const chain = <A, B>(f: (a: A) => Iterable<B>) =>
+  function* (xs: Iterable<A>) {
+    for (const x of xs) yield* f(x);
+  };
+
+export const flatMap = chain;
+
+export function* join<A>(xs: Iterable<Iterable<A>>) {
+  for (const x of xs) {
+    yield* x;
+  }
+}
+
+type AddQueenToBoard = {
+  id: string;
+  x: number;
+  action: 'add-queen-to-board';
+};
+
+type MoveQueen = {
+  id: string;
+  action: 'move-queen';
+  to: [number, number];
+};
+
+type Action = AddQueenToBoard | MoveQueen;
+
+const placeQueensActions = (n: number): Generator<AddQueenToBoard> =>
+  pipe(
+    naturalNumbers(),
+    takeWhile((x) => x < n),
+    map((x) => ({ id: `queen-${x}`, x, action: 'add-queen-to-board' })),
+  );
+
+function* concat<A>(as: Iterable<A>, bs: Iterable<A>) {
+  for (const a of as) yield a;
+  for (const b of bs) yield b;
+}
+
+export const moveQueen = (from: Uint8Array, to: Uint8Array): Iterable<MoveQueen> => {
+  const positions = zip(Array.from(from), Array.from(to)).map((pair, x) => [...pair, x]);
+  return pipe(
+    positions,
+    flatMap(([y1, y2, x]) =>
+      y1 !== y2 ? [{ id: `queen-${x}`, action: 'move-queen', to: [x, y2] }] : [],
+    ),
+  );
+};
+
+const tap =
+  <A>(effect: (a: A) => void) =>
+  (a: A) => {
+    effect(a);
+    return a;
+  };
+
+const solveQueensActions = (n: number) =>
+  pipe(
+    naturalNumbers(),
+    map((x) => x + 342391),
+    takeWhile((x) => x < n ** n),
+    map(natToArray(n)),
+    takeUntil(isValidSolution),
+    mapAdjacent(moveQueen),
+    join,
+  );
+
+function memo<A, B>(f: (a: A) => B) {
+  const memoCache = new Map();
+  return (x: A): B => {
+    if (!memoCache.has(x)) memoCache.set(x, f(x));
+    return memoCache.get(x);
+  };
+}
+
+const forEach = <A>(f: (x: A) => unknown) =>
+  function (xs: Iterable<A>) {
+    for (const x of xs) f(x);
+  };
+
+export const animateQueenActions = (n: number): Generator<Action> => {
+  return concat<Action>(placeQueensActions(n), solveQueensActions(n));
+};
+
+const animateMoveQueen = ({ id, to: [x, y] }: MoveQueen) => {
+  const queen = getById(id);
+  if (!queen) return;
+  queen.className = queen.className.replace(/\s*Piece--\d\d\b/g, '').concat(` Piece--${x}${y}`);
+};
+
+const getById = memo((id) => document.querySelector(`#${id}`));
+
+const animateAddQueen = ({ id, x }: AddQueenToBoard) => {
+  let queen = getById(id);
+  if (!queen) {
+    queen = document.createElement('li');
+    queen.classList.add('Piece', `Piece--${x}0`);
+    const pieces = document.querySelector(`.ChessBoard-pieces`);
+    if (pieces) {
+      pieces.appendChild(queen);
+    }
+  }
+  // animateMoveQueen({ id, to: [x, 0], action: 'move-queen' });
+};
+
+const animationMap = (action: Action) => {
+  switch (action.action) {
+    case 'add-queen-to-board':
+      return () => animateAddQueen(action);
+    case 'move-queen':
+      return () => animateMoveQueen(action);
+  }
+};
+
+const delay =
+  (time: number) =>
+  <A>(val: A) =>
+    new Promise<A>((resolve) => {
+      setTimeout(() => resolve(val), time);
+    });
+
+const reduce =
+  <A, B>(reducer: (b: B, a: A) => B, init: B) =>
+  (as: Iterable<A>) => {
+    let acc = init;
+    for (let a of as) {
+      acc = reducer(acc, a);
+    }
+    return acc;
+  };
+
+// export const animateQueens = (actions: Iterable<Action>) =>
+//   pipe(
+//     actions,
+//     reduce(async (prev, action) => {
+//       await prev;
+//       await delay(100)(undefined);
+//       const actionToTake = animationMap(action);
+//       actionToTake();
+//     }, Promise.resolve()),
+//   );
+export const animateQueens = async (actions: Iterable<Action>) => {
+  for await (let action of map(delay(1))(actions)) {
+    animationMap(action)();
+  }
+};

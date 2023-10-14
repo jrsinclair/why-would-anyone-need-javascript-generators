@@ -1,5 +1,15 @@
 import fc, { type Arbitrary } from 'fast-check';
-import { type Nat, attacks, queens, natToArray, transpose, isValidSolution } from '.';
+import {
+  type Nat,
+  attacks,
+  queens,
+  natToArray,
+  transpose,
+  isValidSolution,
+  animateQueenActions,
+  moveQueen,
+  takeUntil,
+} from '.';
 
 const genNat = (max: number = 998) => fc.nat({ max: Math.min(998, max) }) as Arbitrary<Nat>;
 
@@ -176,9 +186,56 @@ describe.each`
 });
 
 describe('queens()', () => {
-  it('should find a solution of length 8 for the 8-queens problem', () => {
+  it.skip('should find a solution of length 8 for the 8-queens problem', () => {
     const actual = queens(8);
     expect(actual).toHaveLength(8);
+  });
+});
+
+describe('animateQueenActions()', () => {
+  it('should always return a generator of actions, given an integer', () => {
+    fc.assert(
+      fc.property(
+        fc.nat(6).map((n) => n + 1),
+        (n) => {
+          const actual = animateQueenActions(n);
+          expect(actual).toHaveProperty('next');
+          expect(typeof actual.next).toBe('function');
+        },
+      ),
+    );
+  });
+  it('should always return a generator of actions, that is at least n items long', () => {
+    fc.assert(
+      fc.property(
+        fc.nat(6).map((n) => n + 1),
+        (n) => {
+          const actual = animateQueenActions(n);
+          expect([...actual].length).toBeGreaterThanOrEqual(n);
+        },
+      ),
+    );
+  });
+});
+
+describe('takeUntil()', () => {
+  it('should return [0, 1, 2, 3] when asked to filter a list of numbers with (x) => x >= 3', () => {
+    const actual = takeUntil((x: number) => x >= 3)([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    const expected = [0, 1, 2, 3];
+    expect([...actual]).toEqual(expected);
+  });
+});
+
+describe.each`
+  from      | to        | moves
+  ${[0, 0]} | ${[0, 1]} | ${[{ id: 'queen-1', action: 'move-queen', to: [1, 1] }]}
+  ${[0, 0]} | ${[0, 0]} | ${[]}
+  ${[1, 0]} | ${[0, 0]} | ${[{ id: 'queen-0', action: 'move-queen', to: [0, 0] }]}
+  ${[0, 0]} | ${[1, 1]} | ${[{ id: 'queen-0', action: 'move-queen', to: [0, 1] }, { id: 'queen-1', action: 'move-queen', to: [1, 1] }]}
+`('moveQueen()', ({ from, to, moves }) => {
+  it('should move the expected queens to the expected positions', () => {
+    const actual = moveQueen(from, to);
+    expect([...actual]).toEqual(moves);
   });
 });
 

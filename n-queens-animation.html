@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess board</title>
+    <link rel="stylesheet" href="src/theme/chess-board/index.css" />
+</head>
+
+<body class="ChessBoard-page">
+    <div class="ChessBoard-wrapper">
+        <div class="ChessBoard">
+            <ol class="ChessBoard-board">
+                <li id="queen-0" class="Piece Piece--00"><span class="Piece-location">Queen at <span
+                            class="x-coord">0</span>,<span class="y-coord">0</span></span></li>
+                <li id="queen-1" class="Piece Piece--11"><span class="Piece-location">Queen at <span
+                            class="x-coord">1</span>,<span class="y-coord">5</span></span></li>
+                <li id="queen-2" class="Piece Piece--22"><span class="Piece-location">Queen at <span
+                            class="x-coord">2</span>,<span class="y-coord">7</span></span></li>
+                <li id="queen-3" class="Piece Piece--33"><span class="Piece-location">Queen at <span
+                            class="x-coord">3</span>,<span class="y-coord">1</span></span></li>
+                <li id="queen-4" class="Piece Piece--44"><span class="Piece-location">Queen at <span
+                            class="x-coord">4</span>,<span class="y-coord">6</span></span></li>
+                <li id="queen-5" class="Piece Piece--55"><span class="Piece-location">Queen at <span
+                            class="x-coord">5</span>,<span class="y-coord">0</span></span></li>
+                <li id="queen-6" class="Piece Piece--66"><span class="Piece-location">Queen at <span
+                            class="x-coord">6</span>,<span class="y-coord">2</span></span></li>
+                <li id="queen-7" class="Piece Piece--77"><span class="Piece-location">Queen at <span
+                            class="x-coord">7</span>,<span class="y-coord">4</span></span></li>
+            </ol>
+            <!-- <ol class="ChessBoard-index" start="0">
+                <li class="ChessBoard-indexNumeral">0</li>
+                <li class="ChessBoard-indexNumeral">1</li>
+                <li class="ChessBoard-indexNumeral">2</li>
+                <li class="ChessBoard-indexNumeral">3</li>
+                <li class="ChessBoard-indexNumeral">4</li>
+                <li class="ChessBoard-indexNumeral">5</li>
+                <li class="ChessBoard-indexNumeral">6</li>
+                <li class="ChessBoard-indexNumeral">7</li>
+            </ol> -->
+        </div>
+    </div>
+    <script type="module">
+        import { animateQueenActions, animateQueens } from './src/n-queens/index.ts';
+        window.addEventListener('load', () => {
+            const actions = animateQueenActions(8);
+            console.log('About to animate queens');
+            animateQueens(actions);
+        });
+    </script>
+</body>
+
+</html>
