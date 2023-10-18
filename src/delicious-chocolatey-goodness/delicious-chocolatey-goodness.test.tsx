@@ -4,8 +4,20 @@
 import '@testing-library/jest-dom';
 import fc from 'fast-check';
 import { screen } from '@testing-library/dom';
-import { type AnimationAction, type BiscuitAnimation, runAnimation } from './index';
+import {
+  type AnimationAction,
+  type BiscuitAnimation,
+  runAnimation,
+  getBiscuit,
+  biteArbitraryCorner,
+  biteOppositeCorner,
+  drawLiquid,
+  insertIntoBeverage,
+  Fail,
+  StrawPosition,
+} from './index';
 import fs from 'node:fs';
+import { pipe } from 'fp-ts/lib/function';
 
 const resetDOM = () => {
   document.body.innerHTML = '';
@@ -226,6 +238,7 @@ describe('animate()', () => {
     ];
     await runAnimation(actions, { cadence: 0 });
     expect(screen.queryByText('Person', { selector: '.top-of-head' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Person', { selector: '.smile' })).not.toBeInTheDocument();
     expect(screen.queryByText(/biscuit/i)).not.toBeInTheDocument();
     expect(screen.queryByText('😋', { selector: '.smile' })).toBeVisible();
   });
@@ -235,6 +248,55 @@ describe('animate()', () => {
   // Pristine, bitten, or twice-bitten biscuits should never overlap a head or face
 
   // Attempting to render more than one flavour explosion biscuit should result in an error state
+  it('should render an error state if we attempt to render draw-liquid action and there is more than one biscuit in the mug', async () => {
+    const list = [];
+    const biscuit01 = pipe(
+      getBiscuit('biscuit-01', list),
+      biteArbitraryCorner,
+      biteOppositeCorner,
+      insertIntoBeverage,
+    );
+    const biscuit02 = pipe(
+      getBiscuit('biscuit-02', list),
+      biteArbitraryCorner,
+      biteOppositeCorner,
+      insertIntoBeverage,
+      drawLiquid,
+    );
+    expect(biscuit01).toBeInstanceOf(StrawPosition);
+    expect(biscuit02).toBeInstanceOf(Fail);
+    const lastAnimation = biscuit02.animationList[biscuit02.animationList.length - 1];
+    expect(lastAnimation.action).toBe('fail');
+  });
+
+  it('should show a sad person and a poop emoji with no biscuits when rendering a fail', async () => {
+    const actions: BiscuitAnimation[] = [
+      { id: 'biscuit-01', action: 'new-biscuit' },
+      { id: 'biscuit-01', action: 'bite-arbitrary-corner' },
+      { id: 'biscuit-01', action: 'bite-opposite-corner' },
+      { id: 'biscuit-01', action: 'insert-into-mug' },
+      { id: 'biscuit-01', action: 'draw-liquid' },
+      { id: 'biscuit-01', action: 'fail' },
+    ];
+    await runAnimation(actions, { cadence: 0 });
+    expect(screen.queryByText('Person', { selector: '.top-of-head' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Person', { selector: '.smile' })).not.toBeInTheDocument();
+    expect(screen.queryByText(/biscuit/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('Person', { selector: '.sad' })).toBeVisible();
+  });
+
+  it('should stop adding to the animation list if there is already a fail', async () => {
+    const list: BiscuitAnimation[] = [];
+    const biscuits = [getBiscuit('b01', list), getBiscuit('b02', list)]
+      .map(biteArbitraryCorner)
+      .map(biteOppositeCorner)
+      .map(insertIntoBeverage)
+      .map(drawLiquid);
+    const lastAnimation = biscuits[0].animationList[biscuits[0].animationList.length - 1];
+    expect(lastAnimation.action).toBe('fail');
+    expect(list.filter(({ action }) => action === 'draw-liquid')).toHaveLength(1);
+    expect(list.filter(({ action }) => action === 'fail')).toHaveLength(1);
+  });
 
   // Attempting to render a flavour explosion biscuit and consumed biscuit should be the same as if
   // there was no consumed biscuit

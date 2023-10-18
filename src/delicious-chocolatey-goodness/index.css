@@ -7,7 +7,7 @@
   --emigre-light: #faf0e6;
   --emigre-text: #231f20;
 
-  --background-color: var(--slate);
+  --background-color: var(--midnight);
   --text-bg-color: var(--midnight);
   --text-color: var(--emigre-light);
   --code-bg: var(--slate);
@@ -18,14 +18,23 @@
 /* Typography
  * ------------------------------------------------------------------------------ */
 
+@font-face {
+  font-family: 'Rosewood Std';
+  src:
+    url('../theme/rosewoodstd-fill-webfont.woff2') format('woff2'),
+    url('../theme/rosewoodstd-fill-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   color: var(--text-color);
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 h1 {
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
+  font-family: 'Rosewood Std', serif;
+  font-weight: 400;
   margin-top: 1rem;
 }
 
@@ -34,11 +43,15 @@ h1 {
 
 .slam-bg {
   background: var(--background-color);
-  margin: 0;
+  max-width: 90em;
+  margin: 0 auto;
   padding: 0;
+  text-align: center;
+  min-height: 100vh;
+  position: relative;
 }
 
-.fog_layer,
+/* .fog_layer,
 .fog {
   top: 0;
   left: 0;
@@ -62,43 +75,39 @@ h1 {
   right: 0;
   opacity: 0.25;
   position: absolute;
-}
+} */
 
 /* Biscuits
  * ------------------------------------------------------------------------------ */
 
-.biscuits,
-.mug,
-.mug-after,
-.top-of-head,
-.smile,
-h1 {
-  max-width: 90.75rem;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0;
-}
-
 .biscuits {
   display: flex;
   flex-direction: row;
-  min-height: 11.81622966em;
+  /* justify-content: center; */
+  /* min-height: 11.81622966em; */
+  min-height: min(11.81622966em, 13.125vw);
+  margin: 0;
+  padding: 0;
 }
 
 .biscuit {
-  list-style: none;
-  width: 6.25em;
-  height: 11.81622966em;
-  background: url(../assets/tim-tam-unbitten.svg) center center no-repeat transparent;
   background-size: contain;
+  background: url(../assets/tim-tam-unbitten.svg) center center no-repeat transparent;
+  clip-path: polygon(0 0, 100% 0, 100% 0, 100% 0, 100% 100%, 0 100%, 0 100%, 0 100%);
   color: transparent;
+  width: 6.94444444%;
+  /* height: 11.81622966em; */
+  padding: 13.12914407% 0 0 0;
+  text-indent: -99999em;
+  overflow: hidden;
+  line-height: 0;
+  list-style: none;
+  margin: 0 2.22222222% 0 0;
   transition:
     clip-path ease-in var(--cadence),
     translate ease-in-out var(--cadence),
     rotate ease-in-out var(--cadence),
     margin-right ease-in var(--cadence);
-  clip-path: polygon(0 0, 100% 0, 100% 0, 100% 0, 100% 100%, 0 100%, 0 100%, 0 100%);
-  margin-right: 2em;
 }
 
 .once-bitten {
@@ -111,23 +120,28 @@ h1 {
 }
 
 .in-mug {
-  translate: 350% 248%;
+  translate: min(32.08333333vw, 28.875em) min(32.5vw, 29.25em);
   rotate: -30deg;
-  margin-right: -4.25em;
+  /* margin-left: 4.25em; */
+  /* margin-right: -4.25em; */
+  margin-right: -4.72222222%;
 }
+
+/* Mug
+ * ------------------------------------------------------------------------------ */
 
 .mug-after,
 .mug {
   background-size: contain;
-  height: 12.44201183em;
-  width: 32.25em;
+  height: min(13.82445759vw, 12.44201183em);
   position: relative;
-  left: -7%;
+  width: 35.83333333%;
+  margin-left: min(32.08333333%, 28.875em);
 }
 
 .mug {
   background: url(../assets/mug.svg) 33% center no-repeat transparent;
-  margin-top: 24em;
+  margin-top: min(26.66666667vw, 24em);
   position: relative;
   z-index: -1;
   color: transparent;
@@ -136,28 +150,40 @@ h1 {
 .mug-after {
   background: url(../assets/mug-front.svg) center center no-repeat transparent;
   display: block;
-  top: -12.44201183em;
+  top: max(-13.82445759vw, -12.44201183em);
   z-index: 1;
   content: ' ';
 }
 
-.top-of-head,
-.smile {
+/* Emoji
+ * ------------------------------------------------------------------------------ */
+
+.person,
+.problem {
   color: transparent;
   position: relative;
 }
 
-.top-of-head::after,
-.smile::after {
+.person::after,
+.problem::after {
   color: #fff;
   position: absolute;
   display: block;
-  font-size: 16em;
+  font-size: min(17.77777778vw, 16em);
   width: 1em;
   height: 1em;
+  z-index: -1;
+}
+
+.person::after {
   top: -2.890625em;
   left: 0.7421875em;
-  z-index: -1;
+}
+
+.problem {
+  top: min(24.375em, 27.08333333vw);
+  left: 39.30555556%;
+  position: absolute;
 }
 
 .top-of-head::after {
@@ -170,6 +196,14 @@ h1 {
 
 .waiting::after {
   content: '🙂';
+}
+
+.problem::after {
+  content: '💩';
+}
+
+.sad::after {
+  content: '🥺';
 }
 
 /* Utilities

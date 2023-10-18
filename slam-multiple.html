@@ -39,9 +39,9 @@
         const take = (maxResults) => function* (iterable) {
             let count = 0;
             for (const item of iterable) {
-                if (count >= maxResults) return;
                 yield item;
                 count += 1;
+                if (count >= maxResults) return;
             }
         }
         const anim = () => {
@@ -53,7 +53,9 @@
                 map(insertIntoMouth),
                 take(MAX_BISCUIT_CONSUMPTION)
             );
-            animate(Array.from(result), { cadence: 300 });
+            const biscuitArray = Array.from(result);
+            console.log(biscuitArray[0].animationList);
+            animate(biscuitArray, { cadence: 300 });
         }
         document.body.addEventListener('click', anim);
     </script>

@@ -1,5 +1,24 @@
 const defaultAnimationList: BiscuitAnimation[] = [];
 
+// Utilities
+// ------------------------------------------------------------------------------------------------
+
+const $$: typeof document.querySelectorAll = document.querySelectorAll.bind(document);
+const $: typeof document.querySelector = document.querySelector.bind(document);
+
+const last = <A>(items: A[]) => items[items.length - 1];
+
+const uniq = <A>(as: ReadonlyArray<A>) => [...new Set(as).values()];
+
+const biscuitsInMug = (animationList: BiscuitAnimation[]) =>
+  animationList.reduce((idsInMug, { id, action }) => {
+    if (action === 'insert-into-mug') idsInMug.add(id);
+    if (action === 'consume') idsInMug.delete(id);
+    return idsInMug;
+  }, new Set<string>()).size;
+
+// Types and Classes
+// ------------------------------------------------------------------------------------------------
 class Biscuit {
   readonly id: string;
   readonly animationList: BiscuitAnimation[];
@@ -10,17 +29,19 @@ class Biscuit {
   }
 }
 
-class PristineBiscuit extends Biscuit {}
+export class PristineBiscuit extends Biscuit {}
 
-class BittenBiscuit extends Biscuit {}
+export class BittenBiscuit extends Biscuit {}
 
-class TwiceBittenBiscuit extends Biscuit {}
+export class TwiceBittenBiscuit extends Biscuit {}
 
-class StrawPosition extends Biscuit {}
+export class StrawPosition extends Biscuit {}
 
-class FlavourExplosion extends Biscuit {}
+export class FlavourExplosion extends Biscuit {}
 
-class Consumed extends Biscuit {}
+export class Consumed extends Biscuit {}
+
+export class Fail extends Biscuit {}
 
 // TS won't exhaustively check sub-classes, so we create our own union type. And we want to exclude
 // the base type anyway.
@@ -30,7 +51,8 @@ export type TimTam =
   | TwiceBittenBiscuit
   | StrawPosition
   | FlavourExplosion
-  | Consumed;
+  | Consumed
+  | Fail;
 
 export type AnimationAction =
   | 'new-biscuit'
@@ -38,12 +60,16 @@ export type AnimationAction =
   | 'bite-opposite-corner'
   | 'insert-into-mug'
   | 'draw-liquid'
-  | 'consume';
+  | 'consume'
+  | 'fail';
 
 export type BiscuitAnimation = Readonly<{
   id: string;
   action: AnimationAction;
 }>;
+
+// Biscuit transforms
+// ------------------------------------------------------------------------------------------------
 
 export function biteArbitraryCorner({ id, animationList }: PristineBiscuit): BittenBiscuit {
   animationList.push({ id, action: 'bite-arbitrary-corner' });
@@ -60,15 +86,25 @@ export function insertIntoBeverage({ id, animationList }: TwiceBittenBiscuit): S
   return new StrawPosition(id, animationList);
 }
 
-export function drawLiquid({ id, animationList }: StrawPosition): FlavourExplosion {
+export function drawLiquid({ id, animationList }: StrawPosition): FlavourExplosion | Fail {
+  if (biscuitsInMug(animationList) > 1) {
+    if (last(animationList)?.action !== 'fail') {
+      animationList.push({ id, action: 'draw-liquid' });
+      animationList.push({ id, action: 'fail' });
+    }
+    return new Fail(id, animationList);
+  }
   animationList.push({ id, action: 'draw-liquid' });
   return new FlavourExplosion(id, animationList);
 }
 
-export function insertIntoMouth({ id, animationList }): Consumed {
+export function insertIntoMouth({ id, animationList }: FlavourExplosion): Consumed {
   animationList.push({ id, action: 'consume' });
   return new Consumed(id, animationList);
 }
+
+// Animations
+// ------------------------------------------------------------------------------------------------
 
 export const getBiscuit = (id: string, list: BiscuitAnimation[] = defaultAnimationList) => {
   list.push({ id, action: 'new-biscuit' });
@@ -141,25 +177,41 @@ function animateInsertIntoMug(id: string) {
 function createTopOfHead() {
   const topOfHead = document.createElement('div');
   topOfHead.innerHTML = 'Person';
-  topOfHead.classList.add('top-of-head');
+  topOfHead.classList.add('person', 'top-of-head');
   document.body.appendChild(topOfHead);
   return topOfHead;
 }
 
 function animateDrawLiquid() {
-  const head = $('.top-of-head, .smile') || createTopOfHead();
+  const head = $('.person') ?? createTopOfHead();
   head.classList.add('top-of-head');
   head.classList.remove('smile', 'waiting');
 }
 
 function animateConsume(id: string) {
-  const person = $('.top-of-head, .smile') || createTopOfHead();
+  const person = $('.person') ?? createTopOfHead();
   person.classList.add('smile');
   person.classList.remove('top-of-head');
   person.innerHTML = '😋';
   const biscuit = $(`#${id}`);
   biscuit && biscuit.parentElement?.removeChild(biscuit);
   return biscuit;
+}
+
+const createProblem = () => {
+  const problem = document.createElement('div');
+  problem.classList.add('problem');
+  problem.innerHTML = '💩';
+  document.body.appendChild(problem);
+};
+
+function animateFail() {
+  $$('.biscuit').forEach((biscuit) => biscuit.parentElement?.removeChild(biscuit));
+  $('.problem') ?? createProblem();
+  const person = $('.person') ?? createTopOfHead();
+  person.classList.remove('top-of-head', 'smile');
+  person.classList.add('sad');
+  return;
 }
 
 interface AnimationOptions {
@@ -171,8 +223,6 @@ function delay<A>(period: number, value: A): Promise<A> {
     setTimeout(() => resolve(value), period);
   });
 }
-
-const $: typeof document.querySelector = document.querySelector.bind(document);
 
 export async function runAnimation(
   actions: ReadonlyArray<BiscuitAnimation>,
@@ -200,15 +250,16 @@ export async function runAnimation(
         if (action === 'consume') {
           animateConsume(id);
         }
+        if (action === 'fail') {
+          animateFail();
+        }
         return delay(wait, undefined);
       }),
     Promise.resolve(),
   );
 }
 
-const uniq = <A>(as: ReadonlyArray<A>) => [...new Set(as).values()];
-
-export async function animate(biscuits: ReadonlyArray<Biscuit>, opts) {
+export async function animate(biscuits: ReadonlyArray<Biscuit>, opts: AnimationOptions) {
   const lists = biscuits.map((b) => b.animationList);
   const animationList = uniq(lists).flat();
   return runAnimation(animationList, opts);

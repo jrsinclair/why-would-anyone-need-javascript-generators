@@ -99,6 +99,16 @@ const attacksDiagonal = (y1: number, x1: number, arr: Uint8Array) =>
 export const isValidSolution = (solution: Uint8Array): boolean =>
   noRepeats(solution) && !solution.some(attacksDiagonal);
 
+const take = (maxResults: number) =>
+  function* <A>(iterable: Iterable<A>) {
+    let count = 0;
+    for (const item of iterable) {
+      if (count >= maxResults) return;
+      yield item;
+      count += 1;
+    }
+  };
+
 const headOrElse =
   <A>(fallback: A) =>
   (as: IterableIterator<A>) =>
@@ -107,7 +117,7 @@ const headOrElse =
 export const queens = (n: number): Solution =>
   pipe(
     naturalNumbers(),
-    takeWhile((x) => x < n ** n),
+    take(n ** n),
     map(natToArray(n)),
     filter(isValidSolution),
     headOrElse(Uint8Array.from([])),

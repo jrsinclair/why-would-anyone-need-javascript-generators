@@ -24,9 +24,9 @@
 
                 ---
 
-                1. Efficient code <!-- .element: class="fragment" -->
-                2. Impossible code <!-- .element: class="fragment" -->
-                3. Safer code <!-- .element: class="fragment" -->
+                1. What is a generator? <!-- .element: class="fragment" data-fragment-index="0" -->
+                1. Efficient code <!-- .element: class="fragment" data-fragment-index="1" -->
+                2. Impossible code <!-- .element: class="fragment" data-fragment-index="2" -->
 
                 ---
 
@@ -123,7 +123,7 @@ let generator = myGeneratorFunction();
 const MAX_BISCUIT_CONSUMPTION = 5;
 biscuits
     .map(biteArbitraryCorner)
-    .map(bitOppositeCorner)
+    .map(biteOppositeCorner)
     .map(insertIntoBeverage)
     .map(drawLiquid)
     .map(insertIntoMouth)
@@ -131,6 +131,19 @@ biscuits
                 </code></pre>
             </section>
             <section data-background-iframe="/slam-asplode.html" data-background-interactive>
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>
+// A naive approach
+const MAX_BISCUIT_CONSUMPTION = 5;
+biscuits
+    .map(biteArbitraryCorner)
+    .map(biteOppositeCorner)
+    .map(insertIntoBeverage)
+    .map(drawLiquid)
+    .map(insertIntoMouth)
+    .slice(0, MAX_BISCUIT_CONSUMPTION);
+                </code></pre>
             </section>
             <section data-markdown>
                 ### How do we fix it?
@@ -149,9 +162,9 @@ const map = (transform) => function*(iterable) {
 const take = (maxResults) => function* (iterable) {
     let count = 0;
     for (const item of iterable) {
-      if (count >= maxResults) return;
       yield item;
       count += 1;
+      if (count >= maxResults) return;
     }
 }
                 </code></pre>
@@ -200,10 +213,10 @@ pipe(biscuits,
             </section>
             <section>
                 <pre data-trim data-noescape class="javascript"><code>function* naturalNumbers() {
-    let i = 0n; // The n means this is a BigInt
+    let i = 0;
     while (true) {
         yield i;
-        i += 1n;
+        i += 1;
     }
 }</code></pre>
             </section>
@@ -218,7 +231,7 @@ pipe(biscuits,
 }</code></pre>
             </section>
             <section>
-                <pre data-trim data-noescape class="javascript"><code>const isEven = x => x % 2n === 0n;</code></pre>
+                <pre data-trim data-noescape class="javascript"><code>const isEven = x => x % 2 === 0;</code></pre>
             </section>
             <section>
                 <pre data-trim data-noescape
@@ -279,21 +292,15 @@ pipe(biscuits,
                 ### What if no solution exists?
             </section>
             <section>
-                <pre data-trim data-noescape class="javascript"><code>const takeWhile = (shouldYield) => function*(iterable) {
-    for (let item of iterable) {
-        if (!shouldYield(item)) return;
-        yield item;
-    }
-}
-                </code></pre>
+                <pre data-trim data-noescape class="javascript"><code>take(16777216)</code></pre>
             </section>
             <section>
                 <pre data-trim data-noescape
-                    class="javascript"><code>const possibleSolutions = takeWhile(x => x < 16777216)(naturalNumbers())</code></pre>
+                    class="javascript"><code>const possibleSolutions = take(16777216)(naturalNumbers())</code></pre>
             </section>
             <section>
                 <pre data-trim data-noescape
-                    class="javascript"><code>const possibleSolutions = (n) => takeWhile(x => x < n ** n)(naturalNumbers())</code></pre>
+                    class="javascript"><code>const possibleSolutions = (n) => take(n ** n)(naturalNumbers())</code></pre>
             </section>
             <section data-markdown>
                 ### How do we convert an integer to something we can test?
@@ -363,7 +370,7 @@ const solutionToPoints = (solution) => [...solution].map((y, x) => [x, y]);</cod
                 <pre data-trim data-noescape class="javascript"><code>const queens = (n) =>
     pipe(
         naturalNumbers(),
-        takeWhile((x) => x < n ** n),
+        take(n ** n),
         map(natToArray(n)),
         filter(isValidSolution),
         headOrElse(Uint8Array.from([])),

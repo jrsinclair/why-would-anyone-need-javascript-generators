@@ -1,3 +1,60 @@
+:root {
+  --ink: #04040c;
+  --slate: #092d34;
+  --midnight: #0b2752;
+  --emigre-light: #faf0e6;
+  --bgsize: 25%;
+  --chess-dark: rgb(209, 139, 71);
+  --chess-light: rgb(255, 206, 158);
+  --chess-border: #8c4704;
+
+  --r-heading1-size: 4em;
+  --r-heading2-size: 3em;
+  --r-heading3-size: 2em;
+  --r-heading-line-height: 1;
+}
+
+@font-face {
+  font-family: 'Rosewood Std';
+  src:
+    url('rosewoodstd-fill-webfont.woff2') format('woff2'),
+    url('rosewoodstd-fill-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Munson';
+  src:
+    url('munson_roman-webfont.woff2') format('woff2'),
+    url('munson_roman-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Courier Prime';
+  src:
+    url('courierprime-regular-webfont.woff2') format('woff2'),
+    url('courierprime-regular-webfont.woff') format('woff'),
+    url('courierprime-regular-webfont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body,
+.reveal-viewport,
+.reveal {
+  background: var(--ink);
+  color: var(--emigre-light);
+  font-family: 'Munson', cursive;
+  font-variant-numeric: oldstyle-nums;
+}
+
+::marker {
+  font-variant-numeric: oldstyle-nums;
+}
+
 .reveal iframe {
   border: none;
   height: 100%;
@@ -5,4 +62,19 @@
   position: absolute;
   top: 0;
   left: 0;
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3 {
+  font-family: 'Rosewood Std', 'Munson', serif;
+  font-weight: normal;
+}
+
+.reveal code {
+  font-family: 'Courier Prime', 'Courier New', Courier, monospace;
+}
+
+h3.numeric-heading {
+  font-size: var(--r-heading2-size);
 }
