@@ -83,8 +83,6 @@ h1 {
 .biscuits {
   display: flex;
   flex-direction: row;
-  /* justify-content: center; */
-  /* min-height: 11.81622966em; */
   min-height: min(11.81622966em, 13.125vw);
   margin: 0;
   padding: 0;
@@ -122,8 +120,6 @@ h1 {
 .in-mug {
   translate: min(32.08333333vw, 28.875em) min(32.5vw, 29.25em);
   rotate: -30deg;
-  /* margin-left: 4.25em; */
-  /* margin-right: -4.25em; */
   margin-right: -4.72222222%;
 }
 
@@ -151,7 +147,7 @@ h1 {
   background: url(../assets/mug-front.svg) center center no-repeat transparent;
   display: block;
   top: max(-13.82445759vw, -12.44201183em);
-  z-index: 1;
+  z-index: 2;
   content: ' ';
 }
 

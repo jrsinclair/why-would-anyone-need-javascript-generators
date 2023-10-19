@@ -196,7 +196,6 @@ const tap =
 const solveQueensActions = (n: number) =>
   pipe(
     naturalNumbers(),
-    map((x) => x + 342391),
     takeWhile((x) => x < n ** n),
     map(natToArray(n)),
     takeUntil(isValidSolution),
@@ -224,7 +223,9 @@ export const animateQueenActions = (n: number): Generator<Action> => {
 const animateMoveQueen = ({ id, to: [x, y] }: MoveQueen) => {
   const queen = getById(id);
   if (!queen) return;
+  const idx = getById(`idx-${x}`);
   queen.className = queen.className.replace(/\s*Piece--\d\d\b/g, '').concat(` Piece--${x}${y}`);
+  idx && (idx.innerHTML = `${y}`);
 };
 
 const getById = memo((id) => document.querySelector(`#${id}`));
@@ -279,7 +280,7 @@ const reduce =
 //     }, Promise.resolve()),
 //   );
 export const animateQueens = async (actions: Iterable<Action>) => {
-  for await (let action of map(delay(1))(actions)) {
+  for await (let action of map(delay(1000 / 8))(actions)) {
     animationMap(action)();
   }
 };

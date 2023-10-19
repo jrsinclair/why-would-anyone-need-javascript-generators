@@ -79,10 +79,12 @@ body {
 .ChessBoard-index {
   left: 0;
   bottom: 0;
-  padding: 0 3.18091451%;
+  padding: 3.125%;
+  top: 0;
   margin: 0;
   list-style: none;
   width: 100%;
+  height: 100%;
   color: var(--emigre-light);
   position: absolute;
   display: flex;
@@ -90,10 +92,16 @@ body {
 }
 
 .ChessBoard-indexNumeral {
-  width: 12.5%;
+  width: 12%;
+  height: 16.66666667%;
+  top: 66.66666666666666666667%;
   text-align: center;
   position: relative;
-  line-height: 32px;
+  line-height: 2em;
+  font-size: 4em;
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 0.25em;
+  margin: 0.5%;
 }
 
 .QueenAttacks {
@@ -191,7 +199,7 @@ body {
 .Piece--55,
 .Piece--56,
 .Piece--57 {
-  transition: top 100ms ease-in-out;
+  transition: top 1000ms ease-in-out;
   left: 62.5%;
 }
 
@@ -203,7 +211,7 @@ body {
 .Piece--65,
 .Piece--66,
 .Piece--67 {
-  transition: top 10ms ease-in-out;
+  transition: top 500ms ease-in-out;
   left: 75%;
 }
 
@@ -215,7 +223,7 @@ body {
 .Piece--75,
 .Piece--76,
 .Piece--77 {
-  transition: top 1ms ease-in-out;
+  transition: top 125ms ease-in-out;
   left: 87.5%;
 }
 
