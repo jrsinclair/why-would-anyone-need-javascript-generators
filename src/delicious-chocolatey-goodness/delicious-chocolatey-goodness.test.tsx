@@ -15,6 +15,7 @@ import {
   insertIntoBeverage,
   Fail,
   StrawPosition,
+  take,
 } from './index';
 import fs from 'node:fs';
 import { pipe } from 'fp-ts/lib/function';
@@ -313,6 +314,19 @@ describe('animate()', () => {
         );
         await runAnimation(actions, { cadence: 0 });
         expect(screen.queryByText('🙂', { selector: '.waiting' })).toBeVisible();
+      }),
+    );
+  });
+});
+
+describe('take()', () => {
+  it('should return the expected result', () => {
+    expect(Array.from(take(0)(['a', 'b', 'c']))).toEqual([]);
+  });
+  it('should return minimum of requested items or array length', () => {
+    fc.assert(
+      fc.property(fc.array(fc.string()), fc.nat(), (strs, n) => {
+        expect(Array.from(take(n)(strs))).toHaveLength(Math.min(n, strs.length));
       }),
     );
   });

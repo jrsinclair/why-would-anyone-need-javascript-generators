@@ -19,6 +19,8 @@ deck
     height: 1080,
     progress: false,
     hash: true,
+    transition: 'none',
+    viewDistance: 1,
     markdown: {
       smartypants: true,
     },

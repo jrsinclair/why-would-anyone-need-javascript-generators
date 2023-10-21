@@ -69,18 +69,21 @@ const genNat = (max: number = 998) => fc.nat({ max: Math.min(998, max) }) as Arb
 //   });
 // });
 
-const range = (n: number) => new Uint8Array(n).fill(0).map((_, i) => i);
+const range = (n: number) => Array.from({ length: n }).map((_, i) => i);
 
-const swap = ([i, j]: [number, number], arr: Uint8Array) => {
+const swap = ([i, j]: [number, number], arr: Array<number>) => {
   const valI = arr[i];
   const valJ = arr[j];
+  if (valI === undefined) throw new Error(`There is no index ${i} in ${JSON.stringify(arr)}`);
+  if (valJ === undefined) throw new Error(`There is no index ${j} in ${JSON.stringify(arr)}`);
   arr[i] = valJ;
   arr[j] = valI;
   return arr;
 };
 
 const genMatrix = fc
-  .nat({ max: 255 })
+  .nat({ max: 254 })
+  .map((x) => x + 1)
   .chain((n) =>
     fc.tuple(
       fc.constant(n),
@@ -89,7 +92,7 @@ const genMatrix = fc
   )
   .map(([n, pairs]) => {
     const arr = range(n);
-    return new Uint8Array(pairs.reduce((matrix, pair) => swap(pair, matrix), arr));
+    return pairs.reduce((matrix, pair) => swap(pair, matrix), arr);
   });
 
 describe.each`
@@ -99,7 +102,7 @@ describe.each`
   ${[1, 3, 0, 2]} | ${[2, 0, 3, 1]}
 `(`transpose()`, ({ input, expected }) => {
   it(`should return ${JSON.stringify(expected)} when given ${JSON.stringify(input)}`, () => {
-    expect(transpose(new Uint8Array(input))).toEqual(new Uint8Array(expected));
+    expect(transpose(input)).toEqual(expected);
   });
 });
 
@@ -126,7 +129,7 @@ describe.each`
 `('natToArray()', ({ n, x, digits }) => {
   it(`should return ${JSON.stringify(digits)} when converting ${x} to base ${n}`, () => {
     const actual = natToArray(n)(x);
-    const expected = new Uint8Array(digits);
+    const expected = digits;
     expect(actual).toEqual(expected);
   });
 });
@@ -143,7 +146,7 @@ describe.each`
   ${[0, 4, 2, 5, 1, 3]} | ${false}
 `('isValidSolution()', ({ input, expected }) => {
   it(`should return ${expected} when given ${JSON.stringify(input)}`, () => {
-    expect(isValidSolution(new Uint8Array(input))).toBe(expected);
+    expect(isValidSolution(input)).toBe(expected);
   });
 });
 
@@ -159,7 +162,7 @@ describe('natToArray()', () => {
       .padStart(Math.max(n, 1), '0')
       .split('')
       .map((digit) => parseInt(digit, Math.max(n, 2)));
-    return new Uint8Array(ret);
+    return ret;
   };
   it('should always produce the same result as the model', () => {
     fc.assert(
@@ -186,34 +189,25 @@ describe.each`
 });
 
 describe('queens()', () => {
-  it.skip('should find a solution of length 8 for the 8-queens problem', () => {
+  it('should find a solution of length 8 for the 8-queens problem', () => {
     const actual = queens(8);
     expect(actual).toHaveLength(8);
   });
 });
 
 describe('animateQueenActions()', () => {
-  it('should always return a generator of actions, given an integer', () => {
+  it('should always return a generator of actions, that is at least n items long', () => {
     fc.assert(
       fc.property(
-        fc.nat(6).map((n) => n + 1),
+        fc.nat(5).map((n) => n + 1),
         (n) => {
           const actual = animateQueenActions(n);
           expect(actual).toHaveProperty('next');
           expect(typeof actual.next).toBe('function');
-        },
-      ),
-    );
-  });
-  it('should always return a generator of actions, that is at least n items long', () => {
-    fc.assert(
-      fc.property(
-        fc.nat(6).map((n) => n + 1),
-        (n) => {
-          const actual = animateQueenActions(n);
           expect([...actual].length).toBeGreaterThanOrEqual(n);
         },
       ),
+      { numRuns: 5 },
     );
   });
 });

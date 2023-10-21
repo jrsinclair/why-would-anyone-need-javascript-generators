@@ -34,17 +34,15 @@ const head = <A>(as: Generator<A>): A | undefined => as.next().value;
 
 export const natToArray = (n: number) => (x: number) => {
   const radix = Math.max(n, 2);
-  return Uint8Array.from(
-    x
-      .toString(radix)
-      .padStart(n, '0')
-      .split('')
-      .map((i) => parseInt(i, radix)),
-  );
+  return x
+    .toString(radix)
+    .padStart(n, '0')
+    .split('')
+    .map((i) => parseInt(i, radix));
 };
 
 // export const natToArray = (n: number) => (x: number) =>
-//   Uint8Array.from({ length: n }).map((_, i) =>
+//   ReadonlyArray<number>.from({ length: n }).map((_, i) =>
 //     Math.floor((x % Math.pow(n, n - i)) / Math.pow(n, n - i - 1)),
 //   );
 
@@ -86,17 +84,18 @@ const first = <A>(shouldYield: (x: A) => boolean) =>
     }
   };
 
-export const transpose = (solution: Uint8Array) => solution.map((_, i) => solution.indexOf(i));
+export const transpose = (solution: ReadonlyArray<number>) =>
+  solution.map((_, i) => solution.indexOf(i));
 
-const noRepeats = (solution: Uint8Array) => new Set(solution).size === solution.length;
+const noRepeats = (solution: ReadonlyArray<number>) => new Set(solution).size === solution.length;
 
-const solutionToPoints = (solution: Uint8Array): [number, number][] =>
-  [...solution].map((y, x) => [x, y]);
+const solutionToPoints = (solution: ReadonlyArray<number>): [number, number][] =>
+  solution.map((y, x) => [x, y]);
 
-const attacksDiagonal = (y1: number, x1: number, arr: Uint8Array) =>
+const attacksDiagonal = (y1: number, x1: number, arr: ReadonlyArray<number>) =>
   arr.some((y2, x2) => Math.abs(x1 - x2) == Math.abs(y1 - y2) && x1 !== x2 && y1 !== y2);
 
-export const isValidSolution = (solution: Uint8Array): boolean =>
+export const isValidSolution = (solution: ReadonlyArray<number>): boolean =>
   noRepeats(solution) && !solution.some(attacksDiagonal);
 
 const take = (maxResults: number) =>
@@ -120,8 +119,8 @@ export const queens = (n: number): Solution =>
     take(n ** n),
     map(natToArray(n)),
     filter(isValidSolution),
-    headOrElse(Uint8Array.from([])),
-    solutionToPoints,
+    map(solutionToPoints),
+    headOrElse([] as [number, number][]),
   );
 
 // Animate queens
@@ -176,7 +175,10 @@ function* concat<A>(as: Iterable<A>, bs: Iterable<A>) {
   for (const b of bs) yield b;
 }
 
-export const moveQueen = (from: Uint8Array, to: Uint8Array): Iterable<MoveQueen> => {
+export const moveQueen = (
+  from: ReadonlyArray<number>,
+  to: ReadonlyArray<number>,
+): Iterable<MoveQueen> => {
   const positions = zip(Array.from(from), Array.from(to)).map((pair, x) => [...pair, x]);
   return pipe(
     positions,

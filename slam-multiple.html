@@ -6,9 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tim Tam Slam Animation</title>
     <link rel="stylesheet" href="./src/delicious-chocolatey-goodness/index.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         .biscuits {
             --cadence: 300ms;
@@ -20,13 +17,15 @@
     <div class="fog-bg">
         <div class="fog_layer"></div>
     </div>
-    <h1>The Slam</h1>
 
     <script type="module">
         import { animate, getBiscuit, biteArbitraryCorner, biteOppositeCorner, insertIntoBeverage, drawLiquid, insertIntoMouth } from './src/delicious-chocolatey-goodness/index';
         const MAX_BISCUIT_CONSUMPTION = 5;
         const list = []
-        const biscuits = (new Array(11)).fill(undefined).map((_, i) => getBiscuit(`biscuit-${i}`, list));
+        const clear = () => {
+            document.body.innerHTML = '';
+            list.splice(0, list.length);
+        }
         const pipe = (startValue, ...functions) => functions.reduce(
             (val, f) => f(val),
             startValue
@@ -44,7 +43,9 @@
                 if (count >= maxResults) return;
             }
         }
-        const anim = () => {
+        const anim = async () => {
+            clear();
+            const biscuits = (new Array(11)).fill(undefined).map((_, i) => getBiscuit(`biscuit-${i}`, list));
             const result = pipe(biscuits,
                 map(biteArbitraryCorner),
                 map(biteOppositeCorner),
@@ -55,7 +56,9 @@
             );
             const biscuitArray = Array.from(result);
             console.log(biscuitArray[0].animationList);
-            animate(biscuitArray, { cadence: 300 });
+            await animate(biscuitArray, { cadence: 300 });
+            console.log(window.parent.document.body);
+            window.parent.document.querySelector('[aria-label="next slide"]').focus();
         }
         document.body.addEventListener('click', anim);
     </script>

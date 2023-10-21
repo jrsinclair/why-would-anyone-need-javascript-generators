@@ -6,27 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tim Tam Slam Animation</title>
     <link rel="stylesheet" href="./src/delicious-chocolatey-goodness/index.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 </head>
 
 <body class="slam-bg">
     <div class="fog-bg">
         <div class="fog_layer"></div>
     </div>
-    <h1>The Slam</h1>
 
     <script type="module">
         import { animate, getBiscuit, biteArbitraryCorner, biteOppositeCorner, insertIntoBeverage, drawLiquid, insertIntoMouth } from './src/delicious-chocolatey-goodness/index';
-        const anim = () => {
-            const biscuit = getBiscuit();
+        const animList = [];
+        const clear = () => {
+            document.body.innerHTML = '';
+            animList.splice(0, animList.length);
+        }
+        const anim = async () => {
+            clear();
+            const biscuit = getBiscuit('biscuit-01', animList);
             const bittenBiscuit = biteArbitraryCorner(biscuit);
             const doubleBitten = biteOppositeCorner(bittenBiscuit);
             const biscuitInBeverage = insertIntoBeverage(doubleBitten);
             const unstableBiscuit = drawLiquid(biscuitInBeverage);
             const final = insertIntoMouth(unstableBiscuit);
-            animate([final], { cadence: 1000 });
+            await animate([final], { cadence: 1000 });
+            window.parent.document.querySelector('[aria-label="next slide"]').focus();
         }
         document.body.addEventListener('click', anim);
     </script>

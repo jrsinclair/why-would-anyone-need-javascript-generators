@@ -10,6 +10,17 @@ const last = <A>(items: A[]) => items[items.length - 1];
 
 const uniq = <A>(as: ReadonlyArray<A>) => [...new Set(as).values()];
 
+export const take = (maxResults: number) =>
+  function* <A>(iterable: Iterable<A>) {
+    if (maxResults === 0) return;
+    let count = 0;
+    for (let item of iterable) {
+      if (count >= maxResults) return;
+      yield item;
+      count += 1;
+    }
+  };
+
 const biscuitsInMug = (animationList: BiscuitAnimation[]) =>
   animationList.reduce((idsInMug, { id, action }) => {
     if (action === 'insert-into-mug') idsInMug.add(id);

@@ -45,7 +45,7 @@ h1 {
   background: var(--background-color);
   max-width: 90em;
   margin: 0 auto;
-  padding: 0;
+  padding: 5.5555555555555vh 0 0 0;
   text-align: center;
   min-height: 100vh;
   position: relative;
@@ -100,12 +100,16 @@ h1 {
   overflow: hidden;
   line-height: 0;
   list-style: none;
-  margin: 0 2.22222222% 0 0;
+  margin: 0 1.96759259% 0 0;
   transition:
     clip-path ease-in var(--cadence),
     translate ease-in-out var(--cadence),
     rotate ease-in-out var(--cadence),
     margin-right ease-in var(--cadence);
+}
+
+.biscuit:first-child {
+  margin-left: 1.96759259%;
 }
 
 .once-bitten {
@@ -121,6 +125,10 @@ h1 {
   translate: min(32.08333333vw, 28.875em) min(32.5vw, 29.25em);
   rotate: -30deg;
   margin-right: -4.72222222%;
+}
+
+.in-mug:first-child {
+  margin-left: 0;
 }
 
 /* Mug
