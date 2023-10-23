@@ -21,17 +21,16 @@
                 ---
 
                 ## Why would anyone _care_ about generator functions?
-
-                ---
-
-                1. What is a generator? <!-- .element: class="fragment" data-fragment-index="0" -->
-                1. Efficient code <!-- .element: class="fragment" data-fragment-index="1" -->
-                2. Impossible code <!-- .element: class="fragment" data-fragment-index="2" -->
-
-                ---
-
+            </section>
+            <section>
+                <ol>
+                    <li class="fragment" data-fragment-index="2">What is a generator?</li>
+                    <li class="fragment" data-fragment-index="0">Efficient code</li>
+                    <li class="fragment" data-fragment-index="1">Impossible code</li>
+                </ol>
+            </section>
+            <section data-markdown>
                 ## What is a generator function?
-
             </section>
             <section>
                 <pre data-trim data-noescape class="javascript"><code data-line-numbers="1-14|1|5,10|12,13">function* myGeneratorFunction() {
@@ -52,16 +51,11 @@
             </section>
             <section>
                 <h2>What happens if we run this function?</h2>
-                <pre data-trim data-noescape class="javascript"><code>
-let generator = myGeneratorFunction();
-            </code></pre>
+                <pre data-trim data-noescape class="javascript"><code>let generator = myGeneratorFunction();
+</code></pre>
             </section>
             <section data-markdown>
-                ### It doesn't do anything
-
-                ---
-
-                ### A generator object
+                ### The generator, it does nothing
             </section>
             <section>
                 <pre data-trim data-noescape class="javascript"><code>function runGenerator(generator) {
@@ -82,19 +76,16 @@ let generator = myGeneratorFunction();
     yield 'Web Directions';
     yield 'Sydney';
 }
-
-// Implementing iterable means we can use them in for…of loops
-for (place of places()) {
+</code></pre>
+                <pre><code>// Implementing iterable means we can use them in for…of loops
+for (let place of places()) {
     console.log(`Hello ${place}`);
 }
 
 </code></pre>
             </section>
             <section>
-                <pre data-trim data-noescape class="javascript"><code>// We can create an array from any generator
-Array.from(places());
-
-// We can also spread the values of a generator
+                <pre data-trim data-noescape class="javascript"><code>// We can spread the values of a generator
 [...places()];
 </code></pre>
             </section>
@@ -141,8 +132,7 @@ Array.from(places());
                 ## But what if we have a whole packet of biscuits?
             </section>
             <section>
-                <pre data-trim data-noescape class="javascript"><code>
-// A naive approach
+                <pre data-trim data-noescape class="javascript"><code>// A naive approach
 const MAX_BISCUIT_CONSUMPTION = 5;
 biscuits
     .map(biteArbitraryCorner)
@@ -155,8 +145,7 @@ biscuits
             <section data-background-iframe="/slam-asplode.html" data-background-interactive>
             </section>
             <section>
-                <pre data-trim data-noescape class="javascript"><code>
-// A naive approach
+                <pre data-trim data-noescape class="javascript"><code>// A naive approach
 const MAX_BISCUIT_CONSUMPTION = 5;
 biscuits
     .map(biteArbitraryCorner)
@@ -181,19 +170,22 @@ biscuits
     if (maxResults === 0) return;
     let count = 0;
     for (let item of iterable) {
-        if (count >= maxResults) return;
         yield item;
         count += 1;
+        if (count >= maxResults) return;
     }
 };</code></pre>
             </section>
             <section>
-                <pre data-trim data-noescape class="javascript"><code>
-const pipe = (startValue, ...functions) => functions.reduce(
+                <pre data-trim data-noescape class="javascript"><code>const pipe = (startValue, ...functions) => functions.reduce(
     (val, f) => f(val),
     startValue
-);
-                </code></pre>
+);</code></pre>
+            </section>
+            <section>
+                <pre data-trim data-noescape class="javascript"><code>const sayHello = (x) => `Hello ${x}`;
+const legends = (y) => `${y}, you legends!`;</code></pre>
+                <pre><code>pipe('Web Directions', sayHello, legends);</code></pre>
             </section>
             <section>
                 <pre data-trim data-noescape class="javascript"><code>
@@ -239,11 +231,9 @@ pipe(biscuits,
 }</code></pre>
             </section>
             <section>
-                <pre data-trim data-noescape class="javascript"><code>const isEven = x => x % 2 === 0;</code></pre>
-            </section>
-            <section>
-                <pre data-trim data-noescape
-                    class="javascript"><code>const evens = filter(isEven)(naturalNumbers());</code></pre>
+                <pre data-trim data-noescape class="javascript"><code>const isEven = x => x % 2 === 0;
+                    
+const evens = filter(isEven)(naturalNumbers());</code></pre>
             </section>
             <section data-markdown>
                 ### But, of course…
@@ -277,8 +267,8 @@ pipe(biscuits,
             </section>
             <section data-background-iframe="/queen-attacks.html" data-background-interactive>
             </section>
-            <section data-background-iframe="/n-queens-solution.html" data-background-interactive>
-            </section>
+            <!-- <section data-background-iframe="/n-queens-solution.html" data-background-interactive>
+            </section> -->
             <section data-markdown>
                 ### 4,426,165,368
             </section>
@@ -325,7 +315,7 @@ pipe(biscuits,
             </section>
             <section>
                 <pre data-trim data-noescape class="javascript"><code>// Check diagonals for single queen
-// Note the position of x1 and y1
+// Note that y1, x1 and solution match parameters of the .some() callback
 const attacksDiagonal = (y1, x1, solution) =>
     solution.some((y2, x2) => 
         Math.abs(x1 - x2) == Math.abs(y1 - y2) && x1 !== x2 && y1 !== y2);
@@ -347,9 +337,9 @@ const attacksDiagonal = (y1, x1, solution) =>
 const solutionToPoints = (solution) => solution.map((y, x) => [x, y]);</code></pre>
             </section>
             <section>
-                <pre data-trim data-noescape class="javascript"><code>// Note: This only works on an iterator, not an iterable.
-// That is, something with a .next() method
-const head = (iterableIterator) => iterableIterator.next().value;</code></pre>
+                <pre data-trim data-noescape class="javascript"><code>// An iterator is something that has a .next() method
+// like, say, a generator object. 
+const head = (iterator) => iterator.next().value;</code></pre>
             </section>
             <section data-markdown>
                 ### Putting it all together…
@@ -365,16 +355,19 @@ const head = (iterableIterator) => iterableIterator.next().value;</code></pre>
     );</code></pre>
             </section>
             <section data-markdown>
-                ### But, does it work?
+                ### Does it work?
             </section>
             <section data-background-iframe="/n-queens-solution2.html" data-background-interactive>
             </section>
+            <section>
+                <h3>But, that's just two silly examples.<br />What's the point?</h3>
+            </section>
             <section data-markdown>
-                ### But, that's just two silly examples. What's the point?
+                ### A confession
 
                 ---
 
-                ### The point is changing the way you think
+                ### Alternative ways to express solutions
 
                 ---
 
@@ -395,18 +388,20 @@ const head = (iterableIterator) => iterableIterator.next().value;</code></pre>
                 ## Things to remember
 
                 * Generators are _lazy_
-                * Being lazy allows us to think about problems differently
-                * We do far too little with generators, please explore
+                * Laziness changes how data is processed
+                * That allows us to express solutions in different ways
 
             </section>
             <section>
 
-                <h2>Thinking different</h2>
+                <h2>Change your perspective</h2>
 
                 <p><a href="https: //jrsinclair.com/skeptics-guide">https://jrsinclair.com/skeptics-guide</a></p>
 
                 <img class="r-stretch" src="./src/assets/cover.svg" width="1748" height="2480"
                     alt="Book cover of A Skeptic’s Guide to Functional Programming with JavaScript" />
+                <p><small><a href="https://indieweb.social/@jrsinclair">@jrsinclair@indieweb.social</a>&nbsp;&nbsp; |
+                        &nbsp;&nbsp;<a href="https://twitter.com/jrsinclair">@jrsinclair</a></small></p>
         </div>
     </div>
     <script type="module" src="src/presentation.ts"></script>

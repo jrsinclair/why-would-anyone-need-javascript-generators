@@ -21,6 +21,7 @@
             animList.splice(0, animList.length);
         }
         const anim = async () => {
+            window.parent.document.querySelector('[aria-label="next slide"]').focus();
             clear();
             const biscuit = getBiscuit('biscuit-01', animList);
             const bittenBiscuit = biteArbitraryCorner(biscuit);

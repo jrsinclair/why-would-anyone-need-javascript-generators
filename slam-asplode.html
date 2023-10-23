@@ -36,6 +36,7 @@
         const MAX_BISCUIT_CONSUMPTION = 5;
 
         const anim = async () => {
+            window.parent.document.querySelector('[aria-label="next slide"]').focus();
             clear();
             const biscuits = (new Array(11)).fill(undefined).map((_, i) => getBiscuit(`biscuit-${i}`, animList));
             const result = biscuits
@@ -43,9 +44,8 @@
                 .map(biteOppositeCorner)
                 .map(insertIntoBeverage)
                 .map(drawLiquid)
-                // .map(insertIntoMouth)
+                .map(insertIntoMouth)
                 .slice(0, MAX_BISCUIT_CONSUMPTION);
-            console.log(result[0].animationList);
             await animate(result, { cadence: 300 });
             window.parent.document.querySelector('[aria-label="next slide"]').focus();
         }

@@ -44,6 +44,7 @@
             }
         }
         const anim = async () => {
+            window.parent.document.querySelector('[aria-label="next slide"]').focus();
             clear();
             const biscuits = (new Array(11)).fill(undefined).map((_, i) => getBiscuit(`biscuit-${i}`, list));
             const result = pipe(biscuits,
@@ -55,9 +56,7 @@
                 take(MAX_BISCUIT_CONSUMPTION)
             );
             const biscuitArray = Array.from(result);
-            console.log(biscuitArray[0].animationList);
             await animate(biscuitArray, { cadence: 300 });
-            console.log(window.parent.document.body);
             window.parent.document.querySelector('[aria-label="next slide"]').focus();
         }
         document.body.addEventListener('click', anim);

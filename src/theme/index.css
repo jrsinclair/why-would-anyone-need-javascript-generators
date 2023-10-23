@@ -3,6 +3,7 @@
   --slate: #092d34;
   --midnight: #0b2752;
   --emigre-light: #faf0e6;
+  --emigre-red: rgb(216, 35, 42);
   --bgsize: 25%;
   --chess-dark: rgb(209, 139, 71);
   --chess-light: rgb(255, 206, 158);
@@ -51,10 +52,18 @@
   font-style: normal;
 }
 
+li {
+  margin-bottom: 0.333333333333333em;
+}
+
+.reveal a {
+  color: var(--chess-light);
+}
+
 body,
 .reveal-viewport,
 .reveal {
-  background: var(--ink);
+  background: var(--midnight);
   color: var(--emigre-light);
   font-family: 'Munson', cursive;
   font-variant-numeric: oldstyle-nums;
@@ -92,4 +101,44 @@ body,
 
 h3.numeric-heading {
   font-size: var(--r-heading2-size);
+}
+
+/* Copy Pasta Code
+ * ------------------------------------------------------------------------------ */
+
+pre code::before {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  border-radius: 6px;
+  background: #d5c4a1;
+  content: '📋';
+  color: #1d2021;
+  padding: 6px;
+  font-family: sans-serif;
+  opacity: 0.1;
+  transition: opacity 1s ease;
+}
+
+pre code:hover::before {
+  opacity: 1;
+}
+
+pre code::after {
+  background: #d5c4a1;
+  border-radius: 6px;
+  color: #1d2021;
+  content: 'Copied!';
+  font-family: sans-serif;
+  font-size: 0.8em;
+  opacity: 0;
+  padding: 6px;
+  position: absolute;
+  right: 12px;
+  top: calc(24px + 1.875em);
+  transition: opacity 500ms ease;
+}
+
+pre code.copied::after {
+  opacity: 0.75;
 }

@@ -3,10 +3,26 @@ import Markdown from 'reveal.js/plugin/markdown/markdown';
 import Notes from 'reveal.js/plugin/notes/notes.esm';
 import Highlight from 'reveal.js/plugin/highlight/highlight.esm';
 
+const $$: typeof document.querySelectorAll = document.querySelectorAll.bind(document);
+
 const numericHeadings = () => {
-  const $$: typeof document.querySelectorAll = document.querySelectorAll.bind(document);
   [...($$('h1, h2, h3') ?? [])].forEach((el) => {
     if (el.textContent?.match(/^[\d,→\s]+$/)) el.classList.add('numeric-heading');
+  });
+};
+
+const codeClip = () => {
+  $$('pre > code').forEach((el: HTMLElement) => {
+    const clipboard = navigator.clipboard;
+    el.addEventListener('click', () => {
+      const txt =
+        el.querySelectorAll('table').length === 0
+          ? el.innerText
+          : el.innerText.replace(/\n\n/g, '\n');
+      clipboard.writeText(txt);
+      el.classList.add('copied');
+      setTimeout(() => el.classList.remove('copied'), 500);
+    });
   });
 };
 
@@ -25,4 +41,7 @@ deck
       smartypants: true,
     },
   })
-  .then(numericHeadings);
+  .then(() => {
+    numericHeadings();
+    codeClip();
+  });

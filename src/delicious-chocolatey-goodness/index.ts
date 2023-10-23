@@ -15,9 +15,9 @@ export const take = (maxResults: number) =>
     if (maxResults === 0) return;
     let count = 0;
     for (let item of iterable) {
-      if (count >= maxResults) return;
       yield item;
       count += 1;
+      if (count >= maxResults) return;
     }
   };
 
