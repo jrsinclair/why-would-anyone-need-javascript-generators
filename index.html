@@ -363,34 +363,44 @@ const head = (iterator) => iterator.next().value;</code></pre>
                 <h3>But, that’s just two silly examples.<br />What’s the point?</h3>
             </section>
             <section data-markdown>
+                <textarea data-template>
                 ### A confession
 
                 ---
 
                 ### Alternative ways to express solutions
 
-                ---
+            </textarea>
+            </section>
+            <section>
+                <h2>Generators can do more than just be lazy</h2>
+            </section>
+            <section data-visibility="hidden">
+                <section>
+                    <h2>What else can generators do?</h2>
+                </section>
+                <section>
+                    <h2>Pass data in the other direction</h2>
+                </section>
+                <section>
 
-                ## What else can generators do?
+                    <ul>
+                        <li>Emulate `async`/`await`;</li>
+                        <li> Provide _cancellable_ async functions;</li>
+                        <li>State machines</li>
+                    </ul>
 
-                ---
-
-                ### Pass data in the other direction
-
-                ---
-
-                * Emulate `async`/`await`;
-                * Provide _cancellable_ async functions;
-                * State machines
-
-                ---
-
+                </section>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
                 ## Things to remember
 
                 * Generators are _lazy_
                 * Laziness changes how data is processed
                 * That allows us to express solutions in different ways
 
+                </textarea>
             </section>
             <section>
 
@@ -400,7 +410,8 @@ const head = (iterator) => iterator.next().value;</code></pre>
 
                 <img class="r-stretch" src="./src/assets/cover.svg" width="1748" height="2480"
                     alt="Book cover of A Skeptic’s Guide to Functional Programming with JavaScript" />
-                <p><small><a href="https://indieweb.social/@jrsinclair">@jrsinclair@indieweb.social</a>&nbsp;&nbsp; |
+                <p><small><a href="https://indieweb.social/@jrsinclair">@jrsinclair@indieweb.social</a>&nbsp;&nbsp;
+                        |
                         &nbsp;&nbsp;<a href="https://twitter.com/jrsinclair">@jrsinclair</a></small></p>
         </div>
     </div>
